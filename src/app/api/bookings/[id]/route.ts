@@ -3,13 +3,10 @@ import { db } from '@/db';
 import { bookings, properties, roomTypes, users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { id } = params;
+export async function GET(request: NextRequest, context: any) {
+  const id = context.params.id;
 
+  try {
     // Validate ID parameter
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json(
@@ -23,7 +20,6 @@ export async function GET(
 
     const bookingId = parseInt(id);
 
-    // Fetch booking with related details using joins
     const booking = await db
       .select({
         id: bookings.id,
@@ -89,7 +85,6 @@ export async function GET(
       .where(eq(bookings.id, bookingId))
       .limit(1);
 
-    // Check if booking exists
     if (booking.length === 0) {
       return NextResponse.json(
         { 
