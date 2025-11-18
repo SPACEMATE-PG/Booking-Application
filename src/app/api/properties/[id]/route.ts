@@ -40,19 +40,7 @@ export async function GET(
       );
     }
 
-    // Fetch associated room types
-    const propertyRoomTypes = await db
-      .select()
-      .from(roomTypes)
-      .where(eq(roomTypes.propertyId, propertyId));
-
-    return NextResponse.json(
-      {
-        property: property[0],
-        roomTypes: propertyRoomTypes,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json(property[0], { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(

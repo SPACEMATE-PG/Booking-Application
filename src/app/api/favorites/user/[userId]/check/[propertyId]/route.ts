@@ -47,16 +47,18 @@ export async function GET(
       )
       .limit(1);
 
-    // Return result with isFavorited flag and favoriteId if exists
+    // Return result with isFavorited/isFavorite flag and favoriteId if exists
     if (favorite.length > 0) {
       return NextResponse.json({
         isFavorited: true,
+        isFavorite: true,
         favoriteId: favorite[0].id,
       });
     }
 
     return NextResponse.json({
       isFavorited: false,
+      isFavorite: false,
       favoriteId: null,
     });
   } catch (error) {

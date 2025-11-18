@@ -135,3 +135,52 @@ export async function PUT(
     );
   }
 }
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    if (!id || isNaN(parseInt(id))) {
+      return NextResponse.json(
+        { error: 'Valid ID is required', code: 'INVALID_ID' },
+        { status: 400 }
+      );
+    }
+
+    const roomTypeId = parseInt(id);
+
+    const rt = await db
+      .select()
+      .from(roomTypes)
+      .where(eq(roomTypes.id, roomTypeId))
+      .limit(1);
+
+    if (rt.length === 0) {
+      return NextResponse.json(
+        { error: 'Room type not found', code: 'ROOM_TYPE_NOT_FOUND' },
+        { status: 404 }
+      );
+    }
+
+    const row = rt[0] as any;
+    return NextResponse.json(
+      {
+        id: row.id,
+        propertyId: row.propertyId,
+        roomType: row.type,
+        price: row.pricePerMonth,
+        availableRooms: row.availableRooms,
+        totalRooms: row.totalRooms,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('GET room type error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error: ' + (error as Error).message },
+      { status: 500 }
+    );
+  }
+}

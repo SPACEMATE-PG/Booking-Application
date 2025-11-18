@@ -49,9 +49,10 @@ interface Property {
 
 interface RoomType {
   id: number;
-  roomType: string;
-  price: number;
+  type: string;
+  pricePerMonth: number;
   availableRooms: number;
+  totalRooms: number;
 }
 
 export default function BookingPage() {
@@ -124,7 +125,7 @@ export default function BookingPage() {
         remainingAmount: 0,
       };
 
-    const monthlyRent = room.price;
+    const monthlyRent = room.pricePerMonth;
     const months = parseInt(duration);
     const totalRent = monthlyRent * months;
     const securityDeposit = monthlyRent; // 1 month deposit
@@ -325,9 +326,9 @@ export default function BookingPage() {
                     {roomTypes.map((room) => (
                       <SelectItem key={room.id} value={room.id.toString()}>
                         <div className="flex items-center justify-between w-full gap-4">
-                          <span className="font-medium">{room.roomType}</span>
+                          <span className="font-medium">{room.type}</span>
                           <span className="text-teal-600 font-semibold">
-                            ₹{room.price.toLocaleString()}/month
+                            ₹{room.pricePerMonth.toLocaleString()}/month
                           </span>
                           <span className="text-xs text-muted-foreground">
                             ({room.availableRooms} available)
@@ -342,8 +343,8 @@ export default function BookingPage() {
                     <Info className="h-4 w-4 text-teal-600" />
                     <AlertDescription className="text-sm">
                       <strong>{selectedRoom.availableRooms}</strong>{" "}
-                      {selectedRoom.roomType} room(s) available at{" "}
-                      <strong>₹{selectedRoom.price.toLocaleString()}</strong>{" "}
+                      {selectedRoom.type} room(s) available at{" "}
+                      <strong>₹{selectedRoom.pricePerMonth.toLocaleString()}</strong>{" "}
                       per month
                     </AlertDescription>
                   </Alert>
@@ -641,7 +642,7 @@ export default function BookingPage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Room Type</span>
-                <span className="font-medium">{selectedRoom?.roomType}</span>
+                <span className="font-medium">{selectedRoom?.type}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Move-in Date</span>
