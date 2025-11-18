@@ -19,7 +19,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-08-10').toISOString(),
+            createdAt: new Date('2024-08-10'),
         },
         {
             userId: 7,
@@ -36,7 +36,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-08-25').toISOString(),
+            createdAt: new Date('2024-08-25'),
         },
         {
             userId: 12,
@@ -53,7 +53,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-10-10').toISOString(),
+            createdAt: new Date('2024-10-10'),
         },
         {
             userId: 5,
@@ -70,7 +70,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-10-28').toISOString(),
+            createdAt: new Date('2024-10-28'),
         },
         {
             userId: 14,
@@ -87,7 +87,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-09-15').toISOString(),
+            createdAt: new Date('2024-09-15'),
         },
         {
             userId: 9,
@@ -104,7 +104,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-07-25').toISOString(),
+            createdAt: new Date('2024-07-25'),
         },
         {
             userId: 2,
@@ -121,7 +121,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-09-25').toISOString(),
+            createdAt: new Date('2024-09-25'),
         },
         {
             userId: 11,
@@ -138,7 +138,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-11-10').toISOString(),
+            createdAt: new Date('2024-11-10'),
         },
         
         // Upcoming bookings (5) - Move-in date in future
@@ -157,7 +157,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2025-01-10').toISOString(),
+            createdAt: new Date('2025-01-10'),
         },
         {
             userId: 13,
@@ -174,7 +174,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2025-01-15').toISOString(),
+            createdAt: new Date('2025-01-15'),
         },
         {
             userId: 4,
@@ -191,7 +191,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2025-01-18').toISOString(),
+            createdAt: new Date('2025-01-18'),
         },
         {
             userId: 15,
@@ -208,7 +208,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2025-01-20').toISOString(),
+            createdAt: new Date('2025-01-20'),
         },
         {
             userId: 8,
@@ -225,7 +225,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2025-01-22').toISOString(),
+            createdAt: new Date('2025-01-22'),
         },
         
         // Past bookings (5) - Completed stays
@@ -244,7 +244,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2023-11-25').toISOString(),
+            createdAt: new Date('2023-11-25'),
         },
         {
             userId: 1,
@@ -261,7 +261,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-01-10').toISOString(),
+            createdAt: new Date('2024-01-10'),
         },
         {
             userId: 5,
@@ -278,7 +278,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2023-09-25').toISOString(),
+            createdAt: new Date('2023-09-25'),
         },
         {
             userId: 14,
@@ -295,7 +295,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2024-01-28').toISOString(),
+            createdAt: new Date('2024-01-28'),
         },
         {
             userId: 3,
@@ -312,7 +312,7 @@ async function main() {
             cancellationDate: null,
             refundStatus: null,
             refundAmount: null,
-            createdAt: new Date('2023-11-10').toISOString(),
+            createdAt: new Date('2023-11-10'),
         },
         
         // Cancelled bookings (2) - Cancelled with refund info
@@ -331,7 +331,7 @@ async function main() {
             cancellationDate: new Date('2025-01-10').toISOString(),
             refundStatus: 'Processed',
             refundAmount: 23400,
-            createdAt: new Date('2024-12-20').toISOString(),
+            createdAt: new Date('2024-12-20'),
         },
         {
             userId: 12,
@@ -348,7 +348,7 @@ async function main() {
             cancellationDate: new Date('2025-01-12').toISOString(),
             refundStatus: 'Pending',
             refundAmount: 27000,
-            createdAt: new Date('2024-12-28').toISOString(),
+            createdAt: new Date('2024-12-28'),
         },
     ];
 

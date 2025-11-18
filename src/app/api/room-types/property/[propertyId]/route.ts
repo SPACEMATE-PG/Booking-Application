@@ -5,10 +5,10 @@ import { eq, asc } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { propertyId: string } }
+  { params }: { params: Promise<{ propertyId: string }> }
 ) {
   try {
-    const { propertyId } = params;
+    const { propertyId } = await params;
 
     // Validate propertyId parameter
     if (!propertyId || isNaN(parseInt(propertyId))) {

@@ -2,7 +2,7 @@ import { db } from '@/db';
 import { roomTypes } from '@/db/schema';
 
 async function main() {
-    const currentDate = new Date().toISOString();
+    const currentDate = new Date();
     
     const sampleRoomTypes = [
         // Mumbai Properties (1-6) - Higher prices (+20%)

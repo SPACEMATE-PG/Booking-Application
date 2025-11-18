@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') ?? '0');
     const propertyId = searchParams.get('property_id');
 
-    let query = db.select().from(roomTypes);
+    let results;
 
     if (propertyId) {
       const propertyIdNum = parseInt(propertyId);
@@ -20,10 +20,19 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         );
       }
-      query = query.where(eq(roomTypes.propertyId, propertyIdNum));
+      results = await db
+        .select()
+        .from(roomTypes)
+        .where(eq(roomTypes.propertyId, propertyIdNum))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      results = await db
+        .select()
+        .from(roomTypes)
+        .limit(limit)
+        .offset(offset);
     }
-
-    const results = await query.limit(limit).offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
@@ -127,7 +136,8 @@ export async function POST(request: NextRequest) {
         type: type.trim(),
         pricePerMonth: pricePerMonthNum,
         availableRooms: availableRoomsNum,
-        createdAt: new Date().toISOString(),
+        totalRooms: availableRoomsNum,
+        createdAt: new Date(),
       })
       .returning();
 

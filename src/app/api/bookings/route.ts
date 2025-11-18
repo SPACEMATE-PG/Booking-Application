@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const propertyId = searchParams.get('property_id');
     const status = searchParams.get('status');
 
-    let query = db.select().from(bookings);
+    let results;
 
     const conditions = [];
     if (userId) {
@@ -32,13 +32,21 @@ export async function GET(request: NextRequest) {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      results = await db
+        .select()
+        .from(bookings)
+        .where(and(...conditions))
+        .orderBy(desc(bookings.createdAt))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      results = await db
+        .select()
+        .from(bookings)
+        .orderBy(desc(bookings.createdAt))
+        .limit(limit)
+        .offset(offset);
     }
-
-    const results = await query
-      .orderBy(desc(bookings.createdAt))
-      .limit(limit)
-      .offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
@@ -157,7 +165,7 @@ export async function POST(request: NextRequest) {
       paymentStatus: paymentStatus || 'Pending',
       nextRentDueDate: nextRentDueDate || null,
       bookingConfirmationUrl: bookingConfirmationUrl || null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     }).returning();
 
     return NextResponse.json(newBooking[0], { status: 201 });

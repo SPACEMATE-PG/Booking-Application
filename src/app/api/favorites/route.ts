@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') ?? '0');
     const userId = searchParams.get('user_id');
 
-    let query = db.select().from(favorites);
+    let results;
 
     if (userId) {
       const userIdNum = parseInt(userId);
@@ -20,10 +20,17 @@ export async function GET(request: NextRequest) {
           code: "INVALID_USER_ID" 
         }, { status: 400 });
       }
-      query = query.where(eq(favorites.userId, userIdNum));
+      results = await db.select()
+        .from(favorites)
+        .where(eq(favorites.userId, userIdNum))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      results = await db.select()
+        .from(favorites)
+        .limit(limit)
+        .offset(offset);
     }
-
-    const results = await query.limit(limit).offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {

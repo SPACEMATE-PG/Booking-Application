@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -47,6 +47,14 @@ interface Property {
 }
 
 export default function PropertiesPage() {
+  return (
+    <Suspense fallback={null}>
+      <PropertiesContent />
+    </Suspense>
+  );
+}
+
+function PropertiesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUser();

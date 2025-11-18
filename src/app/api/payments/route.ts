@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const paymentType = searchParams.get('payment_type');
 
-    let query = db.select().from(payments);
+    let results;
 
     const conditions = [];
     if (userId) {
@@ -47,13 +47,21 @@ export async function GET(request: NextRequest) {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      results = await db
+        .select()
+        .from(payments)
+        .where(and(...conditions))
+        .orderBy(desc(payments.createdAt))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      results = await db
+        .select()
+        .from(payments)
+        .orderBy(desc(payments.createdAt))
+        .limit(limit)
+        .offset(offset);
     }
-
-    const results = await query
-      .orderBy(desc(payments.createdAt))
-      .limit(limit)
-      .offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
@@ -187,7 +195,7 @@ export async function POST(request: NextRequest) {
       .values({
         userId: parseInt(userId),
         bookingId: parseInt(bookingId),
-        amount: parseInt(amount),
+        amount: Math.round(amount),
         paymentType,
         status,
         paymentMethod: paymentMethod || null,

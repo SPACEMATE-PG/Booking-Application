@@ -5,10 +5,10 @@ import { eq, desc } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { bookingId: string } }
+  { params }: { params: Promise<{ bookingId: string }> }
 ) {
   try {
-    const { bookingId } = params;
+    const { bookingId } = await params;
 
     // Validate bookingId
     if (!bookingId || isNaN(parseInt(bookingId))) {

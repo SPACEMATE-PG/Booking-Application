@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const propertyId = searchParams.get('property_id');
     const userId = searchParams.get('user_id');
 
-    let query = db.select().from(reviews).orderBy(desc(reviews.createdAt));
+    let results;
 
     const conditions = [];
     if (propertyId) {
@@ -28,10 +28,21 @@ export async function GET(request: NextRequest) {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      results = await db
+        .select()
+        .from(reviews)
+        .where(and(...conditions))
+        .orderBy(desc(reviews.createdAt))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      results = await db
+        .select()
+        .from(reviews)
+        .orderBy(desc(reviews.createdAt))
+        .limit(limit)
+        .offset(offset);
     }
-
-    const results = await query.limit(limit).offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {

@@ -5,10 +5,10 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
 
     if (!userId || isNaN(parseInt(userId))) {
       return NextResponse.json(
@@ -53,10 +53,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
 
     // Validate userId
     if (!userId || isNaN(parseInt(userId))) {
@@ -174,7 +174,7 @@ export async function PUT(
       .update(wallet)
       .set({
         balance: newBalance,
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date(),
       })
       .where(eq(wallet.userId, userIdInt))
       .returning();

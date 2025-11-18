@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const bookingId = searchParams.get('booking_id');
     const status = searchParams.get('status');
 
-    let query = db.select().from(maintenanceRequests);
+    let results;
 
     const conditions = [];
     if (userId) {
@@ -27,13 +27,21 @@ export async function GET(request: NextRequest) {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      results = await db
+        .select()
+        .from(maintenanceRequests)
+        .where(and(...conditions))
+        .orderBy(desc(maintenanceRequests.createdAt))
+        .limit(limit)
+        .offset(offset);
+    } else {
+      results = await db
+        .select()
+        .from(maintenanceRequests)
+        .orderBy(desc(maintenanceRequests.createdAt))
+        .limit(limit)
+        .offset(offset);
     }
-
-    const results = await query
-      .orderBy(desc(maintenanceRequests.createdAt))
-      .limit(limit)
-      .offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {

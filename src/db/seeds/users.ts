@@ -10,7 +10,7 @@ async function main() {
             age: 24,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=1',
-            createdAt: new Date('2024-08-15').toISOString(),
+            createdAt: new Date('2024-08-15'),
         },
         {
             phone: '918923456712',
@@ -19,7 +19,7 @@ async function main() {
             age: 26,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=2',
-            createdAt: new Date('2024-09-01').toISOString(),
+            createdAt: new Date('2024-09-01'),
         },
         {
             phone: '919012345678',
@@ -28,7 +28,7 @@ async function main() {
             age: 22,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=3',
-            createdAt: new Date('2024-09-10').toISOString(),
+            createdAt: new Date('2024-09-10'),
         },
         {
             phone: '917734567890',
@@ -37,7 +37,7 @@ async function main() {
             age: 28,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=4',
-            createdAt: new Date('2024-09-20').toISOString(),
+            createdAt: new Date('2024-09-20'),
         },
         {
             phone: '918845671234',
@@ -46,7 +46,7 @@ async function main() {
             age: 23,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=5',
-            createdAt: new Date('2024-10-05').toISOString(),
+            createdAt: new Date('2024-10-05'),
         },
         {
             phone: '919156782345',
@@ -55,7 +55,7 @@ async function main() {
             age: 25,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=6',
-            createdAt: new Date('2024-10-15').toISOString(),
+            createdAt: new Date('2024-10-15'),
         },
         {
             phone: '917923456789',
@@ -64,7 +64,7 @@ async function main() {
             age: 21,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=7',
-            createdAt: new Date('2024-10-25').toISOString(),
+            createdAt: new Date('2024-10-25'),
         },
         {
             phone: '918834567812',
@@ -73,7 +73,7 @@ async function main() {
             age: 29,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=8',
-            createdAt: new Date('2024-11-01').toISOString(),
+            createdAt: new Date('2024-11-01'),
         },
         {
             phone: '919045678923',
@@ -82,7 +82,7 @@ async function main() {
             age: 27,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=9',
-            createdAt: new Date('2024-11-10').toISOString(),
+            createdAt: new Date('2024-11-10'),
         },
         {
             phone: '917756789034',
@@ -91,7 +91,7 @@ async function main() {
             age: 24,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=10',
-            createdAt: new Date('2024-11-18').toISOString(),
+            createdAt: new Date('2024-11-18'),
         },
         {
             phone: '918867890145',
@@ -100,7 +100,7 @@ async function main() {
             age: 30,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=11',
-            createdAt: new Date('2024-11-25').toISOString(),
+            createdAt: new Date('2024-11-25'),
         },
         {
             phone: '919178901256',
@@ -109,7 +109,7 @@ async function main() {
             age: 22,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=12',
-            createdAt: new Date('2024-12-01').toISOString(),
+            createdAt: new Date('2024-12-01'),
         },
         {
             phone: '917689012367',
@@ -118,7 +118,7 @@ async function main() {
             age: 26,
             occupation: 'Professional',
             profilePhoto: 'https://i.pravatar.cc/150?img=13',
-            createdAt: new Date('2024-12-08').toISOString(),
+            createdAt: new Date('2024-12-08'),
         },
         {
             phone: '918890123478',
@@ -127,7 +127,7 @@ async function main() {
             age: 23,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=14',
-            createdAt: new Date('2024-12-15').toISOString(),
+            createdAt: new Date('2024-12-15'),
         },
         {
             phone: '919001234589',
@@ -136,7 +136,7 @@ async function main() {
             age: 35,
             occupation: 'Student',
             profilePhoto: 'https://i.pravatar.cc/150?img=15',
-            createdAt: new Date('2024-12-20').toISOString(),
+            createdAt: new Date('2024-12-20'),
         },
     ];
 

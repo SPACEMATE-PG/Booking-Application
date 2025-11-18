@@ -116,7 +116,7 @@ async function main() {
             description: 'The main light bulb in my room has stopped working. The room is too dark in the evenings. Please replace with a new bulb.',
             status: 'Resolved',
             createdAt: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-            resolvedAt: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+            resolvedAt: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000),
         },
         {
             userId: 8,
@@ -125,7 +125,7 @@ async function main() {
             description: 'There is no dustbin in my room. I need one for daily waste disposal. Please provide a dustbin.',
             status: 'Resolved',
             createdAt: new Date(now.getTime() - 22 * 24 * 60 * 60 * 1000).toISOString(),
-            resolvedAt: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+            resolvedAt: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000),
         },
         {
             userId: 1,
@@ -134,7 +134,7 @@ async function main() {
             description: 'The mattress provided is extremely hard and uncomfortable. I\'m having trouble sleeping and waking up with back pain. Need a softer mattress.',
             status: 'Resolved',
             createdAt: new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000).toISOString(),
-            resolvedAt: new Date(now.getTime() - 23 * 24 * 60 * 60 * 1000).toISOString(),
+            resolvedAt: new Date(now.getTime() - 23 * 24 * 60 * 60 * 1000),
         },
         {
             userId: 15,
@@ -143,7 +143,7 @@ async function main() {
             description: 'The room door makes a very loud squeaking sound when opening and closing. It disturbs other residents, especially at night. Please oil the hinges.',
             status: 'Resolved',
             createdAt: new Date(now.getTime() - 28 * 24 * 60 * 60 * 1000).toISOString(),
-            resolvedAt: new Date(now.getTime() - 26 * 24 * 60 * 60 * 1000).toISOString(),
+            resolvedAt: new Date(now.getTime() - 26 * 24 * 60 * 60 * 1000),
         },
     ];
 

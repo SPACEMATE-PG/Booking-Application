@@ -5,10 +5,10 @@ import { eq } from 'drizzle-orm';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID parameter
     if (!id || isNaN(parseInt(id))) {
@@ -47,11 +47,8 @@ export async function PUT(
     // Build update object
     const updates: {
       status?: string;
-      resolvedAt?: string;
-      updatedAt: string;
-    } = {
-      updatedAt: new Date().toISOString()
-    };
+      resolvedAt?: Date;
+    } = {};
 
     // Handle status update
     if (status !== undefined) {
@@ -71,13 +68,13 @@ export async function PUT(
 
       // Auto-set resolvedAt if status is changed to "Resolved" and resolvedAt is not provided
       if (status === 'Resolved' && !resolvedAt) {
-        updates.resolvedAt = new Date().toISOString();
+        updates.resolvedAt = new Date();
       }
     }
 
     // Handle explicit resolvedAt update
     if (resolvedAt !== undefined) {
-      updates.resolvedAt = resolvedAt;
+      updates.resolvedAt = new Date(resolvedAt);
     }
 
     // Update the maintenance request

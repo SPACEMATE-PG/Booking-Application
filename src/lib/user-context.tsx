@@ -17,6 +17,7 @@ interface UserContextType {
   setUser: (user: User | null) => void;
   logout: () => void;
   isLoading: boolean;
+  refreshUser: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -52,8 +53,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     window.location.href = '/';
   };
 
+  const refreshUser = () => {
+    const storedUser = localStorage.getItem('pguser');
+    if (storedUser) {
+      try {
+        setUserState(JSON.parse(storedUser));
+      } catch {
+        setUserState(null);
+        localStorage.removeItem('pguser');
+      }
+    } else {
+      setUserState(null);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser, logout, isLoading }}>
+    <UserContext.Provider value={{ user, setUser, logout, isLoading, refreshUser }}>
       {children}
     </UserContext.Provider>
   );
