@@ -64,12 +64,13 @@ export default function PropertyDetailsPage() {
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const [showChatDialog, setShowChatDialog] = useState(false);
 
-  const propertyImages = [
-    property?.thumbnailImage || "/placeholder.jpg",
-    "/placeholder.jpg",
-    "/placeholder.jpg",
-    "/placeholder.jpg",
-  ];
+const propertyImages = [
+  property?.thumbnailImage || "/placeholder.svg",
+  "/placeholder.svg",
+  "/placeholder.svg",
+  "/placeholder.svg",
+];
+
 
   useEffect(() => {
     if (params.id) {
@@ -81,34 +82,48 @@ export default function PropertyDetailsPage() {
       }
     }
   }, [params.id, user]);
+const fetchPropertyDetails = async () => {
+  try {
+    const response = await fetch(`/api/properties/${params.id}`);
+    if (response.ok) {
+      const data = await response.json();
 
-  const fetchPropertyDetails = async () => {
-    try {
-      const response = await fetch(`/api/properties/${params.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        let amenities: string[] = [];
-        try {
-          if (typeof data.amenities === 'string') {
-            amenities = JSON.parse(data.amenities);
-          } else if (Array.isArray(data.amenities)) {
-            amenities = data.amenities;
-          }
-        } catch (e) {
-          amenities = [];
+      // Parse amenities
+      let amenities: string[] = [];
+      try {
+        if (typeof data.amenities === "string") {
+          amenities = JSON.parse(data.amenities);
+        } else if (Array.isArray(data.amenities)) {
+          amenities = data.amenities;
         }
-        setProperty({ ...data, amenities });
-      } else {
-        toast.error("Property not found");
-        router.push("/properties");
+      } catch {
+        amenities = [];
       }
-    } catch (error) {
-      console.error("Failed to fetch property:", error);
-      toast.error("Failed to load property details");
-    } finally {
-      setLoading(false);
+
+      // Parse images
+      let images: string[] = [];
+      try {
+        if (typeof data.images === "string") {
+          images = JSON.parse(data.images);
+        } else if (Array.isArray(data.images)) {
+          images = data.images;
+        }
+      } catch {
+        images = [];
+      }
+
+      setProperty({ ...data, amenities, images });
+    } else {
+      toast.error("Property not found");
+      router.push("/properties");
     }
-  };
+  } catch (error) {
+    console.error("Failed to fetch property:", error);
+    toast.error("Failed to load property details");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchRoomTypes = async () => {
     try {

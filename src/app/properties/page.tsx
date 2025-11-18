@@ -2,12 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, MapPin, Heart, Star, Wifi, UtensilsCrossed, Car, Wind, Filter, Loader2, X } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Heart,
+  Star,
+  Wifi,
+  UtensilsCrossed,
+  Car,
+  Wind,
+  Filter,
+  Loader2,
+  X,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
@@ -34,20 +52,41 @@ export default function PropertiesPage() {
   const { user } = useUser();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
   const [favorites, setFavorites] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter states
-  const [genderFilter, setGenderFilter] = useState(searchParams.get("gender_type") || "all");
-  const [cityFilter, setCityFilter] = useState(searchParams.get("city") || "all");
+  const [genderFilter, setGenderFilter] = useState(
+    searchParams.get("gender_type") || "all"
+  );
+  const [cityFilter, setCityFilter] = useState(
+    searchParams.get("city") || "all"
+  );
   const [roomTypeFilter, setRoomTypeFilter] = useState("all");
   const [priceRange, setPriceRange] = useState([5000, 25000]);
   const [sortBy, setSortBy] = useState("popularity");
   const [amenitiesFilter, setAmenitiesFilter] = useState<string[]>([]);
 
-  const amenitiesList = ["WiFi", "AC", "Food", "Laundry", "Parking", "Gym", "Balcony"];
-  const cities = ["All Cities", "Mumbai", "Delhi", "Bangalore", "Pune", "Hyderabad"];
+  const amenitiesList = [
+    "WiFi",
+    "AC",
+    "Food",
+    "Laundry",
+    "Parking",
+    "Gym",
+    "Balcony",
+  ];
+  const cities = [
+    "All Cities",
+    "Mumbai",
+    "Delhi",
+    "Bangalore",
+    "Pune",
+    "Hyderabad",
+  ];
 
   useEffect(() => {
     fetchProperties();
@@ -64,7 +103,7 @@ export default function PropertiesPage() {
         const parsedData = data.map((property: any) => {
           let amenities: string[] = [];
           try {
-            if (typeof property.amenities === 'string') {
+            if (typeof property.amenities === "string") {
               amenities = JSON.parse(property.amenities);
             } else if (Array.isArray(property.amenities)) {
               amenities = property.amenities;
@@ -111,7 +150,9 @@ export default function PropertiesPage() {
 
     try {
       if (isFavorited) {
-        const checkResponse = await fetch(`/api/favorites/user/${user.id}/check/${propertyId}`);
+        const checkResponse = await fetch(
+          `/api/favorites/user/${user.id}/check/${propertyId}`
+        );
         if (checkResponse.ok) {
           const { favoriteId } = await checkResponse.json();
           const response = await fetch(`/api/favorites/${favoriteId}`, {
@@ -140,9 +181,9 @@ export default function PropertiesPage() {
   };
 
   const toggleAmenity = (amenity: string) => {
-    setAmenitiesFilter(prev =>
+    setAmenitiesFilter((prev) =>
       prev.includes(amenity)
-        ? prev.filter(a => a !== amenity)
+        ? prev.filter((a) => a !== amenity)
         : [...prev, amenity]
     );
   };
@@ -157,27 +198,40 @@ export default function PropertiesPage() {
   };
 
   const filteredProperties = properties
-    .filter(property => {
+    .filter((property) => {
       // Search filter
-      const matchesSearch = searchQuery === "" ||
+      const matchesSearch =
+        searchQuery === "" ||
         property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         property.locality.toLowerCase().includes(searchQuery.toLowerCase()) ||
         property.city.toLowerCase().includes(searchQuery.toLowerCase());
 
       // Gender filter
-      const matchesGender = genderFilter === "all" || property.genderType === genderFilter;
+      const matchesGender =
+        genderFilter === "all" || property.genderType === genderFilter;
 
       // City filter
       const matchesCity = cityFilter === "all" || property.city === cityFilter;
 
       // Price filter
-      const matchesPrice = property.startingPrice >= priceRange[0] && property.startingPrice <= priceRange[1];
+      const matchesPrice =
+        property.startingPrice >= priceRange[0] &&
+        property.startingPrice <= priceRange[1];
 
       // Amenities filter
-      const matchesAmenities = amenitiesFilter.length === 0 ||
-        amenitiesFilter.every(amenity => property.amenities.includes(amenity));
+      const matchesAmenities =
+        amenitiesFilter.length === 0 ||
+        amenitiesFilter.every((amenity) =>
+          property.amenities.includes(amenity)
+        );
 
-      return matchesSearch && matchesGender && matchesCity && matchesPrice && matchesAmenities;
+      return (
+        matchesSearch &&
+        matchesGender &&
+        matchesCity &&
+        matchesPrice &&
+        matchesAmenities
+      );
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -230,7 +284,11 @@ export default function PropertiesPage() {
       <div className="container max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Filters Sidebar */}
-          <aside className={`lg:w-80 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <aside
+            className={`lg:w-80 space-y-6 ${
+              showFilters ? "block" : "hidden lg:block"
+            }`}
+          >
             <Card className="p-4 space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="font-semibold text-lg">Filters</h3>
@@ -276,7 +334,8 @@ export default function PropertiesPage() {
               {/* Price Range */}
               <div className="space-y-3">
                 <label className="text-sm font-medium">
-                  Price Range: ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+                  Price Range: ₹{priceRange[0].toLocaleString()} - ₹
+                  {priceRange[1].toLocaleString()}
                 </label>
                 <Slider
                   min={5000}
@@ -295,7 +354,11 @@ export default function PropertiesPage() {
                   {amenitiesList.map((amenity) => (
                     <Badge
                       key={amenity}
-                      variant={amenitiesFilter.includes(amenity) ? "default" : "outline"}
+                      variant={
+                        amenitiesFilter.includes(amenity)
+                          ? "default"
+                          : "outline"
+                      }
                       className="cursor-pointer"
                       onClick={() => toggleAmenity(amenity)}
                     >
@@ -315,8 +378,12 @@ export default function PropertiesPage() {
                   <SelectContent>
                     <SelectItem value="popularity">Popularity</SelectItem>
                     <SelectItem value="rating">Rating</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="price-low">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-high">
+                      Price: High to Low
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -337,16 +404,24 @@ export default function PropertiesPage() {
               </div>
             ) : filteredProperties.length === 0 ? (
               <div className="text-center py-20">
-                <p className="text-muted-foreground">No properties found matching your filters</p>
-                <Button onClick={clearFilters} className="mt-4" variant="outline">
+                <p className="text-muted-foreground">
+                  No properties found matching your filters
+                </p>
+                <Button
+                  onClick={clearFilters}
+                  className="mt-4"
+                  variant="outline"
+                >
                   Clear Filters
                 </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredProperties.map((property) => {
-                  const amenitiesArray = Array.isArray(property.amenities) ? property.amenities : [];
-                  
+                  const amenitiesArray = Array.isArray(property.amenities)
+                    ? property.amenities
+                    : [];
+
                   return (
                     <Card
                       key={property.id}
@@ -358,8 +433,10 @@ export default function PropertiesPage() {
                           src={property.thumbnailImage}
                           alt={property.name}
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform"
                         />
+
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -413,7 +490,9 @@ export default function PropertiesPage() {
                           <p className="text-2xl font-bold text-teal-500">
                             ₹{property.startingPrice.toLocaleString()}
                           </p>
-                          <p className="text-xs text-muted-foreground">per month</p>
+                          <p className="text-xs text-muted-foreground">
+                            per month
+                          </p>
                         </div>
                         <Button
                           className="bg-teal-500 hover:bg-teal-600"

@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, MapPin, Loader2, PackageX, Clock, CheckCircle, XCircle } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Loader2,
+  PackageX,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,18 +59,18 @@ export default function BookingsPage() {
 
   const fetchBookings = async () => {
     if (!user) return;
-    
+
     try {
       const response = await fetch(`/api/bookings/user/${user.id}`);
       if (response.ok) {
         const data = await response.json();
-        
+
         // Fetch property and room type details for each booking
         const bookingsWithDetails = await Promise.all(
           data.map(async (booking: any) => {
             const [propertyRes, roomTypeRes] = await Promise.all([
               fetch(`/api/properties/${booking.propertyId}`),
-              fetch(`/api/room-types/${booking.roomTypeId}`)
+              fetch(`/api/room-types/${booking.roomTypeId}`),
             ]);
 
             const property = propertyRes.ok ? await propertyRes.json() : null;
@@ -70,21 +78,27 @@ export default function BookingsPage() {
 
             return {
               ...booking,
-              property: property ? {
-                name: property.name,
-                city: property.city,
-                locality: property.locality,
-                thumbnailImage: property.thumbnailImage
-              } : null,
-              roomType: roomType ? {
-                roomType: roomType.roomType,
-                price: roomType.price
-              } : null
+              property: property
+                ? {
+                    name: property.name,
+                    city: property.city,
+                    locality: property.locality,
+                    thumbnailImage: property.thumbnailImage,
+                  }
+                : null,
+              roomType: roomType
+                ? {
+                    roomType: roomType.roomType,
+                    price: roomType.price,
+                  }
+                : null,
             };
           })
         );
-        
-        setBookings(bookingsWithDetails.filter(b => b.property && b.roomType));
+
+        setBookings(
+          bookingsWithDetails.filter((b) => b.property && b.roomType)
+        );
       }
     } catch (error) {
       console.error("Failed to fetch bookings:", error);
@@ -95,7 +109,13 @@ export default function BookingsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    const statusConfig: Record<
+      string,
+      {
+        label: string;
+        variant: "default" | "secondary" | "destructive" | "outline";
+      }
+    > = {
       pending: { label: "Pending", variant: "secondary" },
       confirmed: { label: "Confirmed", variant: "default" },
       active: { label: "Active", variant: "default" },
@@ -123,9 +143,14 @@ export default function BookingsPage() {
 
   const filterBookings = (status: string) => {
     if (status === "all") return bookings;
-    if (status === "upcoming") return bookings.filter(b => b.status === "confirmed");
-    if (status === "active") return bookings.filter(b => b.status === "active");
-    if (status === "past") return bookings.filter(b => b.status === "completed" || b.status === "cancelled");
+    if (status === "upcoming")
+      return bookings.filter((b) => b.status === "confirmed");
+    if (status === "active")
+      return bookings.filter((b) => b.status === "active");
+    if (status === "past")
+      return bookings.filter(
+        (b) => b.status === "completed" || b.status === "cancelled"
+      );
     return bookings;
   };
 
@@ -147,12 +172,18 @@ export default function BookingsPage() {
             <Calendar className="h-8 w-8" />
             <h1 className="text-4xl font-bold">My Bookings</h1>
           </div>
-          <p className="text-white/90">Manage your PG bookings and reservations</p>
+          <p className="text-white/90">
+            Manage your PG bookings and reservations
+          </p>
         </div>
       </div>
 
       <div className="container max-w-6xl mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-4 lg:w-[500px]">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
@@ -164,9 +195,11 @@ export default function BookingsPage() {
             {filteredBookings.length === 0 ? (
               <div className="text-center py-20">
                 <PackageX className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h2 className="text-2xl font-semibold mb-2">No bookings found</h2>
+                <h2 className="text-2xl font-semibold mb-2">
+                  No bookings found
+                </h2>
                 <p className="text-muted-foreground mb-6">
-                  {activeTab === "all" 
+                  {activeTab === "all"
                     ? "You haven't made any bookings yet"
                     : `No ${activeTab} bookings available`}
                 </p>
@@ -180,7 +213,10 @@ export default function BookingsPage() {
             ) : (
               <div className="space-y-4">
                 {filteredBookings.map((booking) => (
-                  <Card key={booking.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                  <Card
+                    key={booking.id}
+                    className="overflow-hidden hover:shadow-md transition-shadow"
+                  >
                     <CardContent className="p-0">
                       <div className="flex flex-col md:flex-row">
                         {/* Property Image */}
@@ -189,6 +225,7 @@ export default function BookingsPage() {
                             src={booking.property.thumbnailImage}
                             alt={booking.property.name}
                             fill
+                            sizes="(max-width: 768px) 100vw, 192px"
                             className="object-cover"
                           />
                         </div>
@@ -203,7 +240,8 @@ export default function BookingsPage() {
                               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <MapPin className="h-4 w-4" />
                                 <span>
-                                  {booking.property.locality}, {booking.property.city}
+                                  {booking.property.locality},{" "}
+                                  {booking.property.city}
                                 </span>
                               </div>
                             </div>
@@ -215,21 +253,36 @@ export default function BookingsPage() {
 
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                              <p className="text-xs text-muted-foreground mb-1">Room Type</p>
-                              <p className="font-medium">{booking.roomType.roomType}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-muted-foreground mb-1">Move-in Date</p>
+                              <p className="text-xs text-muted-foreground mb-1">
+                                Room Type
+                              </p>
                               <p className="font-medium">
-                                {format(new Date(booking.moveInDate), "MMM dd, yyyy")}
+                                {booking.roomType.roomType}
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs text-muted-foreground mb-1">Duration</p>
-                              <p className="font-medium">{booking.duration} month(s)</p>
+                              <p className="text-xs text-muted-foreground mb-1">
+                                Move-in Date
+                              </p>
+                              <p className="font-medium">
+                                {format(
+                                  new Date(booking.moveInDate),
+                                  "MMM dd, yyyy"
+                                )}
+                              </p>
                             </div>
                             <div>
-                              <p className="text-xs text-muted-foreground mb-1">Total Amount</p>
+                              <p className="text-xs text-muted-foreground mb-1">
+                                Duration
+                              </p>
+                              <p className="font-medium">
+                                {booking.duration} month(s)
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground mb-1">
+                                Total Amount
+                              </p>
                               <p className="font-medium text-teal-500">
                                 ₹{booking.totalAmount.toLocaleString()}
                               </p>
@@ -239,7 +292,9 @@ export default function BookingsPage() {
                           <div className="flex gap-2 pt-2">
                             <Button
                               variant="outline"
-                              onClick={() => router.push(`/properties/${booking.propertyId}`)}
+                              onClick={() =>
+                                router.push(`/properties/${booking.propertyId}`)
+                              }
                             >
                               View Property
                             </Button>

@@ -5,15 +5,14 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: { userId: string } }
 ) {
   try {
-    const { userId } = await params;
+    const { userId } = params;
 
-    // Validate userId
     if (!userId || isNaN(parseInt(userId))) {
       return NextResponse.json(
-        {
+        { 
           error: 'Valid user ID is required',
           code: 'INVALID_USER_ID',
         },
@@ -23,7 +22,6 @@ export async function GET(
 
     const userIdInt = parseInt(userId);
 
-    // Get wallet for user
     const userWallet = await db
       .select()
       .from(wallet)
@@ -51,6 +49,7 @@ export async function GET(
     );
   }
 }
+
 
 export async function PUT(
   request: NextRequest,

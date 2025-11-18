@@ -2,7 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, MapPin, Star, Wifi, UtensilsCrossed, Car, Wind, Loader2, HeartOff } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Star,
+  Wifi,
+  UtensilsCrossed,
+  Car,
+  Wind,
+  Loader2,
+  HeartOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -47,21 +57,23 @@ export default function FavoritesPage() {
 
   const fetchFavorites = async () => {
     if (!user) return;
-    
+
     try {
       const response = await fetch(`/api/favorites/user/${user.id}`);
       if (response.ok) {
         const data = await response.json();
-        
+
         // Fetch full property details for each favorite
         const favoritesWithProperties = await Promise.all(
           data.map(async (fav: any) => {
-            const propResponse = await fetch(`/api/properties/${fav.propertyId}`);
+            const propResponse = await fetch(
+              `/api/properties/${fav.propertyId}`
+            );
             if (propResponse.ok) {
               const property = await propResponse.json();
               let amenities: string[] = [];
               try {
-                if (typeof property.amenities === 'string') {
+                if (typeof property.amenities === "string") {
                   amenities = JSON.parse(property.amenities);
                 } else if (Array.isArray(property.amenities)) {
                   amenities = property.amenities;
@@ -72,14 +84,16 @@ export default function FavoritesPage() {
               return {
                 id: fav.id,
                 propertyId: fav.propertyId,
-                property: { ...property, amenities }
+                property: { ...property, amenities },
               };
             }
             return null;
           })
         );
-        
-        setFavorites(favoritesWithProperties.filter(f => f !== null) as Favorite[]);
+
+        setFavorites(
+          favoritesWithProperties.filter((f) => f !== null) as Favorite[]
+        );
       }
     } catch (error) {
       console.error("Failed to fetch favorites:", error);
@@ -95,7 +109,7 @@ export default function FavoritesPage() {
         method: "DELETE",
       });
       if (response.ok) {
-        setFavorites(favorites.filter(fav => fav.id !== favoriteId));
+        setFavorites(favorites.filter((fav) => fav.id !== favoriteId));
         toast.success(`Removed ${propertyName} from favorites`);
       }
     } catch (error) {
@@ -150,15 +164,18 @@ export default function FavoritesPage() {
           <>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">
-                {favorites.length} {favorites.length === 1 ? "Property" : "Properties"} Saved
+                {favorites.length}{" "}
+                {favorites.length === 1 ? "Property" : "Properties"} Saved
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favorites.map((favorite) => {
                 const property = favorite.property;
-                const amenitiesArray = Array.isArray(property.amenities) ? property.amenities : [];
-                
+                const amenitiesArray = Array.isArray(property.amenities)
+                  ? property.amenities
+                  : [];
+
                 return (
                   <Card
                     key={favorite.id}
@@ -170,8 +187,10 @@ export default function FavoritesPage() {
                         src={property.thumbnailImage}
                         alt={property.name}
                         fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform"
                       />
+
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -219,7 +238,9 @@ export default function FavoritesPage() {
                         <p className="text-2xl font-bold text-teal-500">
                           ₹{property.startingPrice.toLocaleString()}
                         </p>
-                        <p className="text-xs text-muted-foreground">per month</p>
+                        <p className="text-xs text-muted-foreground">
+                          per month
+                        </p>
                       </div>
                       <Button
                         className="bg-teal-500 hover:bg-teal-600"

@@ -2,13 +2,37 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
-import { ChevronLeft, Calendar as CalendarIcon, Loader2, CreditCard, Wallet, CheckCircle2, Info } from "lucide-react";
+import {
+  ChevronLeft,
+  Calendar as CalendarIcon,
+  Loader2,
+  CreditCard,
+  Wallet,
+  CheckCircle2,
+  Info,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
@@ -39,11 +63,13 @@ export default function BookingPage() {
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  
+
   // Booking details
-  const [selectedRoomType, setSelectedRoomType] = useState<string>(searchParams.get("roomType") || "");
+  const [selectedRoomType, setSelectedRoomType] = useState<string>(
+    searchParams.get("roomType") || ""
+  );
   const [duration, setDuration] = useState<string>("1");
-  const [moveInDate, setMoveInDate] = useState<Date>();
+  const [moveInDate, setMoveInDate] = useState<Date | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("full");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -61,7 +87,7 @@ export default function BookingPage() {
     try {
       const [propertyRes, roomsRes] = await Promise.all([
         fetch(`/api/properties/${params.propertyId}`),
-        fetch(`/api/room-types/property/${params.propertyId}`)
+        fetch(`/api/room-types/property/${params.propertyId}`),
       ]);
 
       if (propertyRes.ok) {
@@ -82,22 +108,40 @@ export default function BookingPage() {
   };
 
   const getSelectedRoom = () => {
-    return roomTypes.find(room => room.id.toString() === selectedRoomType);
+    return roomTypes.find((room) => room.id.toString() === selectedRoomType);
   };
 
   const calculateTotal = () => {
     const room = getSelectedRoom();
-    if (!room) return { monthlyRent: 0, securityDeposit: 0, bookingAmount: 0, totalRent: 0, total: 0, months: 0, remainingAmount: 0 };
+    if (!room)
+      return {
+        monthlyRent: 0,
+        securityDeposit: 0,
+        bookingAmount: 0,
+        totalRent: 0,
+        total: 0,
+        months: 0,
+        remainingAmount: 0,
+      };
 
     const monthlyRent = room.price;
     const months = parseInt(duration);
     const totalRent = monthlyRent * months;
     const securityDeposit = monthlyRent; // 1 month deposit
     const bookingAmount = Math.round(monthlyRent * 0.2); // 20% booking amount
-    const total = paymentMethod === "full" ? totalRent + securityDeposit : bookingAmount;
-    const remainingAmount = (totalRent + securityDeposit) - bookingAmount;
+    const total =
+      paymentMethod === "full" ? totalRent + securityDeposit : bookingAmount;
+    const remainingAmount = totalRent + securityDeposit - bookingAmount;
 
-    return { monthlyRent, securityDeposit, bookingAmount, totalRent, total, months, remainingAmount };
+    return {
+      monthlyRent,
+      securityDeposit,
+      bookingAmount,
+      totalRent,
+      total,
+      months,
+      remainingAmount,
+    };
   };
 
   const handleBooking = async () => {
@@ -156,7 +200,10 @@ export default function BookingPage() {
           amount: calculations.total,
           paymentMethod: paymentMethod === "full" ? "online" : "booking",
           paymentStatus: "completed",
-          transactionId: `TXN${Date.now()}${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
+          transactionId: `TXN${Date.now()}${Math.random()
+            .toString(36)
+            .substring(2, 9)
+            .toUpperCase()}`,
         }),
       });
 
@@ -166,7 +213,7 @@ export default function BookingPage() {
 
       setBookingSuccess(true);
       toast.success("🎉 Booking confirmed successfully!");
-      
+
       // Redirect to bookings page after showing success
       setTimeout(() => {
         router.push("/bookings");
@@ -190,7 +237,10 @@ export default function BookingPage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen gap-4">
         <p className="text-muted-foreground">Property not found</p>
-        <Button onClick={() => router.push("/properties")} className="bg-teal-500 hover:bg-teal-600">
+        <Button
+          onClick={() => router.push("/properties")}
+          className="bg-teal-500 hover:bg-teal-600"
+        >
           Browse Properties
         </Button>
       </div>
@@ -205,7 +255,11 @@ export default function BookingPage() {
       {/* Header */}
       <div className="border-b bg-white dark:bg-gray-900">
         <div className="container max-w-6xl mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => router.back()} className="gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="gap-2"
+          >
             <ChevronLeft className="h-4 w-4" />
             Back to Property
           </Button>
@@ -215,7 +269,9 @@ export default function BookingPage() {
       <div className="container max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Complete Your Booking</h1>
-          <p className="text-muted-foreground">Review your details and confirm your booking</p>
+          <p className="text-muted-foreground">
+            Review your details and confirm your booking
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -233,6 +289,7 @@ export default function BookingPage() {
                       src={property.thumbnailImage || "/placeholder.jpg"}
                       alt={property.name}
                       fill
+                      sizes="80px"
                       className="object-cover"
                     />
                   </div>
@@ -257,7 +314,10 @@ export default function BookingPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Select value={selectedRoomType} onValueChange={setSelectedRoomType}>
+                <Select
+                  value={selectedRoomType}
+                  onValueChange={setSelectedRoomType}
+                >
                   <SelectTrigger className="h-12">
                     <SelectValue placeholder="Choose your preferred room configuration" />
                   </SelectTrigger>
@@ -266,8 +326,12 @@ export default function BookingPage() {
                       <SelectItem key={room.id} value={room.id.toString()}>
                         <div className="flex items-center justify-between w-full gap-4">
                           <span className="font-medium">{room.roomType}</span>
-                          <span className="text-teal-600 font-semibold">₹{room.price.toLocaleString()}/month</span>
-                          <span className="text-xs text-muted-foreground">({room.availableRooms} available)</span>
+                          <span className="text-teal-600 font-semibold">
+                            ₹{room.price.toLocaleString()}/month
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({room.availableRooms} available)
+                          </span>
                         </div>
                       </SelectItem>
                     ))}
@@ -277,7 +341,10 @@ export default function BookingPage() {
                   <Alert className="border-teal-200 bg-teal-50 dark:bg-teal-950">
                     <Info className="h-4 w-4 text-teal-600" />
                     <AlertDescription className="text-sm">
-                      <strong>{selectedRoom.availableRooms}</strong> {selectedRoom.roomType} room(s) available at <strong>₹{selectedRoom.price.toLocaleString()}</strong> per month
+                      <strong>{selectedRoom.availableRooms}</strong>{" "}
+                      {selectedRoom.roomType} room(s) available at{" "}
+                      <strong>₹{selectedRoom.price.toLocaleString()}</strong>{" "}
+                      per month
                     </AlertDescription>
                   </Alert>
                 )}
@@ -328,7 +395,9 @@ export default function BookingPage() {
                       className="w-full justify-start text-left font-normal h-12"
                     >
                       <CalendarIcon className="mr-2 h-5 w-5" />
-                      {moveInDate ? format(moveInDate, "PPP") : "Select your move-in date"}
+                      {moveInDate
+                        ? format(moveInDate, "PPP")
+                        : "Select your move-in date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -343,7 +412,8 @@ export default function BookingPage() {
                 </Popover>
                 {moveInDate && (
                   <p className="text-sm text-muted-foreground mt-2">
-                    You can move in on <strong>{format(moveInDate, "EEEE, MMMM d, yyyy")}</strong>
+                    You can move in on{" "}
+                    <strong>{format(moveInDate, "EEEE, MMMM d, yyyy")}</strong>
                   </p>
                 )}
               </CardContent>
@@ -362,8 +432,8 @@ export default function BookingPage() {
               <CardContent className="space-y-3">
                 <div
                   className={`p-5 border-2 rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === "full" 
-                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950 shadow-md" 
+                    paymentMethod === "full"
+                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950 shadow-md"
                       : "border-gray-200 hover:border-gray-400"
                   }`}
                   onClick={() => setPaymentMethod("full")}
@@ -377,14 +447,18 @@ export default function BookingPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <CreditCard className="h-5 w-5 text-teal-600" />
-                        <h4 className="font-semibold text-lg">Pay Full Amount</h4>
+                        <h4 className="font-semibold text-lg">
+                          Pay Full Amount
+                        </h4>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Pay total rent (monthly rent × duration) + security deposit now
+                        Pay total rent (monthly rent × duration) + security
+                        deposit now
                       </p>
                       <div className="flex items-center gap-2 text-xs text-teal-600 font-medium">
                         <CheckCircle2 className="h-4 w-4" />
-                        Complete everything in one payment • Move in without additional payment
+                        Complete everything in one payment • Move in without
+                        additional payment
                       </div>
                     </div>
                   </div>
@@ -392,8 +466,8 @@ export default function BookingPage() {
 
                 <div
                   className={`p-5 border-2 rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === "booking" 
-                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950 shadow-md" 
+                    paymentMethod === "booking"
+                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950 shadow-md"
                       : "border-gray-200 hover:border-gray-400"
                   }`}
                   onClick={() => setPaymentMethod("booking")}
@@ -407,14 +481,17 @@ export default function BookingPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <Wallet className="h-5 w-5 text-teal-600" />
-                        <h4 className="font-semibold text-lg">Pay Booking Amount</h4>
+                        <h4 className="font-semibold text-lg">
+                          Pay Booking Amount
+                        </h4>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
                         Pay 20% booking amount now to secure the property
                       </p>
                       <div className="flex items-center gap-2 text-xs text-teal-600 font-medium">
                         <CheckCircle2 className="h-4 w-4" />
-                        Pay remaining amount on move-in day • Flexible payment option
+                        Pay remaining amount on move-in day • Flexible payment
+                        option
                       </div>
                     </div>
                   </div>
@@ -434,20 +511,34 @@ export default function BookingPage() {
                   <>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">Monthly Rent</span>
-                        <span className="font-semibold text-lg">₹{calculations.monthlyRent.toLocaleString()}</span>
+                        <span className="text-muted-foreground">
+                          Monthly Rent
+                        </span>
+                        <span className="font-semibold text-lg">
+                          ₹{calculations.monthlyRent.toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center text-sm pb-2 border-b">
                         <span className="text-muted-foreground">Duration</span>
-                        <span className="font-semibold">{calculations.months} month(s)</span>
+                        <span className="font-semibold">
+                          {calculations.months} month(s)
+                        </span>
                       </div>
                       <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">Total Rent</span>
-                        <span className="font-semibold">₹{calculations.totalRent.toLocaleString()}</span>
+                        <span className="text-muted-foreground">
+                          Total Rent
+                        </span>
+                        <span className="font-semibold">
+                          ₹{calculations.totalRent.toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">Security Deposit</span>
-                        <span className="font-semibold">₹{calculations.securityDeposit.toLocaleString()}</span>
+                        <span className="text-muted-foreground">
+                          Security Deposit
+                        </span>
+                        <span className="font-semibold">
+                          ₹{calculations.securityDeposit.toLocaleString()}
+                        </span>
                       </div>
                       <div className="text-xs text-muted-foreground italic">
                         Security deposit is refundable
@@ -455,17 +546,29 @@ export default function BookingPage() {
                       {paymentMethod === "booking" && (
                         <>
                           <div className="flex justify-between items-center text-sm pb-2 border-b bg-amber-50 dark:bg-amber-950 -mx-4 px-4 py-2">
-                            <span className="text-muted-foreground">Booking Amount (20%)</span>
-                            <span className="font-semibold text-amber-600">₹{calculations.bookingAmount.toLocaleString()}</span>
+                            <span className="text-muted-foreground">
+                              Booking Amount (20%)
+                            </span>
+                            <span className="font-semibold text-amber-600">
+                              ₹{calculations.bookingAmount.toLocaleString()}
+                            </span>
                           </div>
                           <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Remaining Amount</span>
-                            <span className="font-medium">₹{calculations.remainingAmount.toLocaleString()}</span>
+                            <span className="text-muted-foreground">
+                              Remaining Amount
+                            </span>
+                            <span className="font-medium">
+                              ₹{calculations.remainingAmount.toLocaleString()}
+                            </span>
                           </div>
                           <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950">
                             <Info className="h-4 w-4 text-amber-600" />
                             <AlertDescription className="text-xs">
-                              Pay remaining <strong>₹{calculations.remainingAmount.toLocaleString()}</strong> on move-in day
+                              Pay remaining{" "}
+                              <strong>
+                                ₹{calculations.remainingAmount.toLocaleString()}
+                              </strong>{" "}
+                              on move-in day
                             </AlertDescription>
                           </Alert>
                         </>
@@ -473,7 +576,9 @@ export default function BookingPage() {
                     </div>
                     <div className="border-t-2 pt-4 -mx-4 px-4 bg-gray-50 dark:bg-gray-900">
                       <div className="flex justify-between items-center mb-4">
-                        <span className="font-bold text-lg">Total Payable Now</span>
+                        <span className="font-bold text-lg">
+                          Total Payable Now
+                        </span>
                         <span className="text-3xl font-bold text-teal-500">
                           ₹{calculations.total.toLocaleString()}
                         </span>
@@ -482,7 +587,12 @@ export default function BookingPage() {
                         className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white h-12 text-lg font-semibold"
                         size="lg"
                         onClick={handleBooking}
-                        disabled={!selectedRoomType || !moveInDate || !duration || processing}
+                        disabled={
+                          !selectedRoomType ||
+                          !moveInDate ||
+                          !duration ||
+                          processing
+                        }
                       >
                         {processing ? (
                           <>
@@ -546,12 +656,16 @@ export default function BookingPage() {
               <div className="flex justify-between text-sm pt-2 border-t">
                 <span className="text-muted-foreground">Payment Method</span>
                 <span className="font-medium">
-                  {paymentMethod === "full" ? "Full Amount" : "Booking Amount (20%)"}
+                  {paymentMethod === "full"
+                    ? "Full Amount"
+                    : "Booking Amount (20%)"}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-2 border-t">
                 <span className="font-bold">Amount to Pay</span>
-                <span className="text-2xl font-bold text-teal-500">₹{calculations.total.toLocaleString()}</span>
+                <span className="text-2xl font-bold text-teal-500">
+                  ₹{calculations.total.toLocaleString()}
+                </span>
               </div>
             </div>
             <div className="flex gap-3">
@@ -591,7 +705,9 @@ export default function BookingPage() {
                 <CheckCircle2 className="h-12 w-12 text-green-600" />
               </div>
             </div>
-            <DialogTitle className="text-2xl text-center">Booking Confirmed!</DialogTitle>
+            <DialogTitle className="text-2xl text-center">
+              Booking Confirmed!
+            </DialogTitle>
             <DialogDescription className="text-center">
               Your payment has been processed successfully
             </DialogDescription>
@@ -599,10 +715,14 @@ export default function BookingPage() {
           <div className="space-y-4 py-4">
             <div className="bg-green-50 dark:bg-green-950 p-4 rounded-lg space-y-2">
               <p className="text-sm text-center">
-                <strong className="text-green-700 dark:text-green-400">Transaction ID:</strong> TXN{Date.now()}
+                <strong className="text-green-700 dark:text-green-400">
+                  Transaction ID:
+                </strong>{" "}
+                TXN{Date.now()}
               </p>
               <p className="text-sm text-center text-muted-foreground">
-                Booking status: <strong className="text-green-600">Confirmed</strong>
+                Booking status:{" "}
+                <strong className="text-green-600">Confirmed</strong>
               </p>
             </div>
             <p className="text-sm text-center text-muted-foreground">

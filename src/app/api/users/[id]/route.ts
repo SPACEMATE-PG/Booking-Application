@@ -5,10 +5,10 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     // Validate ID is a valid integer
     if (!id || isNaN(parseInt(id))) {
@@ -28,7 +28,6 @@ export async function GET(
       .where(eq(users.id, parseInt(id)))
       .limit(1);
 
-    // Return 404 if user not found
     if (user.length === 0) {
       return NextResponse.json(
         {
@@ -39,7 +38,6 @@ export async function GET(
       );
     }
 
-    // Return user object
     return NextResponse.json(user[0], { status: 200 });
   } catch (error) {
     console.error('GET error:', error);

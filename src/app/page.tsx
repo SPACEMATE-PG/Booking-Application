@@ -54,25 +54,28 @@ export default function Home() {
         const data = await response.json();
         const parsedData = data.map((property: any) => {
           let amenities: string[] = [];
-          
+
           try {
-            if (typeof property.amenities === 'string') {
+            if (typeof property.amenities === "string") {
               amenities = JSON.parse(property.amenities);
             } else if (Array.isArray(property.amenities)) {
               amenities = property.amenities;
             }
           } catch (e) {
-            console.warn(`Failed to parse amenities for property ${property.id}:`, e);
+            console.warn(
+              `Failed to parse amenities for property ${property.id}:`,
+              e
+            );
             amenities = [];
           }
-          
+
           if (!Array.isArray(amenities)) {
             amenities = [];
           }
-          
+
           return {
             ...property,
-            amenities
+            amenities,
           };
         });
         setProperties(parsedData);
@@ -109,7 +112,9 @@ export default function Home() {
 
     try {
       if (isFavorited) {
-        const checkResponse = await fetch(`/api/favorites/user/${user.id}/check/${propertyId}`);
+        const checkResponse = await fetch(
+          `/api/favorites/user/${user.id}/check/${propertyId}`
+        );
         if (checkResponse.ok) {
           const { favoriteId } = await checkResponse.json();
           const response = await fetch(`/api/favorites/${favoriteId}`, {
@@ -158,7 +163,10 @@ export default function Home() {
       <HeroSection />
 
       {/* Search Section - Modern Design */}
-      <section id="search-section" className="py-16 px-4 bg-gradient-to-br from-primary/5 via-primary/10 to-background">
+      <section
+        id="search-section"
+        className="py-16 px-4 bg-gradient-to-br from-primary/5 via-primary/10 to-background"
+      >
         <div className="container max-w-4xl mx-auto">
           <div className="text-center space-y-6">
             <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
@@ -229,8 +237,8 @@ export default function Home() {
                 Handpicked accommodations just for you
               </p>
             </div>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => router.push("/properties")}
               className="group"
             >
@@ -245,7 +253,9 @@ export default function Home() {
             </div>
           ) : filteredProperties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground text-lg">No properties found</p>
+              <p className="text-muted-foreground text-lg">
+                No properties found
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -260,8 +270,12 @@ export default function Home() {
                       src={property.thumbnailImage}
                       alt={property.name}
                       fill
+                      sizes="(max-width: 640px) 100vw,
+         (max-width: 1024px) 50vw,
+         33vw"
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
+
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -306,7 +320,9 @@ export default function Home() {
                         <p className="text-xl font-bold">
                           ₹{property.startingPrice.toLocaleString()}
                         </p>
-                        <p className="text-xs text-muted-foreground">per month</p>
+                        <p className="text-xs text-muted-foreground">
+                          per month
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -317,7 +333,7 @@ export default function Home() {
 
           {/* View All Button - Mobile */}
           <div className="flex justify-center mt-10">
-            <Button 
+            <Button
               size="lg"
               onClick={() => router.push("/properties")}
               className="group"

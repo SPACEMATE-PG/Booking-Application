@@ -3,8 +3,11 @@ import { db } from '@/db';
 import { bookings, properties, roomTypes, users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET(request: NextRequest, context: any) {
-  const id = context.params.id;
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   try {
     // Validate ID parameter
