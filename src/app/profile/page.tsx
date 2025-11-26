@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Phone, Calendar, Briefcase, Camera, Loader2, LogOut } from "lucide-react";
+import { User, Phone, Calendar, Briefcase, Camera, Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,9 +12,11 @@ import { toast } from "sonner";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, logout, refreshUser } = useUser();
+  const { user, logout, setUser } = useUser();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -29,7 +31,7 @@ export default function ProfilePage() {
       router.push("/login");
       return;
     }
-    
+
     setFormData({
       name: user.name || "",
       phone: user.phone || "",
@@ -37,14 +39,31 @@ export default function ProfilePage() {
       age: user.age?.toString() || "",
       occupation: user.occupation || "",
     });
-  }, [user]);
+    setProfilePhoto(user.profilePhoto || null);
+  }, [user, router]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Image size should be less than 2MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result as string);
+        setEditing(true); // Auto-enable editing mode when photo is changed
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
-      const response = await fetch(`/api/users/${user.id}`, {
+      const response = await fetch(`/api/users?id=${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -53,15 +72,18 @@ export default function ProfilePage() {
           gender: formData.gender,
           age: parseInt(formData.age),
           occupation: formData.occupation,
+          profilePhoto: profilePhoto,
         }),
       });
 
       if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
         toast.success("Profile updated successfully");
-        await refreshUser();
         setEditing(false);
       } else {
-        toast.error("Failed to update profile");
+        const errorData = await response.json();
+        toast.error(errorData.error || "Failed to update profile");
       }
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -103,13 +125,34 @@ export default function ProfilePage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="relative">
-                    <div className="h-32 w-32 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-full flex items-center justify-center">
-                      <span className="text-4xl font-bold text-white">
-                        {user.name?.charAt(0).toUpperCase()}
-                      </span>
+                  <div className="relative group">
+                    <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 flex items-center justify-center">
+                      {profilePhoto ? (
+                        <img
+                          src={profilePhoto}
+                          alt="Profile"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center">
+                          <span className="text-4xl font-bold text-white">
+                            {user.name?.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <button className="absolute bottom-0 right-0 h-10 w-10 bg-teal-500 rounded-full flex items-center justify-center text-white hover:bg-teal-600 transition-colors">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute bottom-0 right-0 h-10 w-10 bg-teal-500 rounded-full flex items-center justify-center text-white hover:bg-teal-600 transition-all shadow-md group-hover:scale-110"
+                      title="Change Profile Photo"
+                    >
                       <Camera className="h-5 w-5" />
                     </button>
                   </div>
@@ -158,6 +201,7 @@ export default function ProfilePage() {
                             age: user.age?.toString() || "",
                             occupation: user.occupation || "",
                           });
+                          setProfilePhoto(user.profilePhoto || null);
                         }}
                       >
                         Cancel

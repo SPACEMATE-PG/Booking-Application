@@ -19,6 +19,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
 import Image from "next/image";
+import { PropertyTierBadge, getTier } from "@/components/PropertyTierBadge";
+import { GenderIcon } from "@/components/GenderIcon";
 
 interface Property {
   id: number;
@@ -200,9 +202,12 @@ export default function FavoritesPage() {
                       >
                         <Heart className="h-5 w-5 fill-red-500 text-red-500" />
                       </button>
-                      <Badge className="absolute bottom-2 left-2 bg-teal-500">
-                        {property.genderType}
-                      </Badge>
+                      <div className="absolute top-2 left-2 z-10">
+                        <PropertyTierBadge price={property.startingPrice} />
+                      </div>
+                      <div className="absolute bottom-2 left-2 bg-white/90 p-2 rounded-full shadow-md backdrop-blur-sm" title={property.genderType}>
+                        <GenderIcon type={property.genderType} className="text-teal-600" />
+                      </div>
                     </div>
                     <CardContent className="p-4 space-y-2">
                       <h3 className="font-semibold text-lg line-clamp-1">

@@ -82,14 +82,22 @@ const Navbar = () => {
                 </Button>
               </Link>
             )}
-            
+
             {isLoading ? (
               <div className="h-10 w-32 bg-muted animate-pulse rounded-md" />
             ) : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <User className="size-4" />
+                  <Button variant="outline" className="gap-2 pl-2">
+                    {user.profilePhoto ? (
+                      <img
+                        src={user.profilePhoto}
+                        alt={user.name}
+                        className="size-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="size-4" />
+                    )}
                     {user.name}
                   </Button>
                 </DropdownMenuTrigger>
@@ -151,7 +159,7 @@ const Navbar = () => {
                       </Button>
                     </Link>
                   ))}
-                  
+
                   {/* Additional Links */}
                   <div className="border-t pt-4 mt-4">
                     <Link href="/about">

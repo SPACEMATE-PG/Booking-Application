@@ -4,6 +4,9 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { UserProvider } from "@/lib/user-context";
 import { Toaster } from "@/components/ui/sonner";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
+import { RatingProvider } from "@/lib/rating-context";
+import { ActionRatingPopup } from "@/components/ActionRatingPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,9 +38,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserProvider>
-          <Navbar />
-          {children}
-          <Toaster />
+          <RatingProvider>
+            <Navbar />
+            {children}
+            <FeedbackWidget />
+            <ActionRatingPopup />
+            <Toaster />
+          </RatingProvider>
         </UserProvider>
       </body>
     </html>

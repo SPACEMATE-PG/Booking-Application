@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Heart, Star, Loader2, ArrowRight } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { MapPin, Heart, Star, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/lib/user-context";
+import { useRating } from "@/lib/rating-context";
 import { toast } from "sonner";
 import Image from "next/image";
+import { PropertyTierBadge, getTier } from "@/components/PropertyTierBadge";
+import { GenderIcon } from "@/components/GenderIcon";
 import { HeroSection } from "@/components/HeroSection";
 import { FeaturesSection } from "@/components/FeaturesSection";
 import { MainFeatureSection } from "@/components/MainFeatureSection";
@@ -35,6 +37,7 @@ interface Property {
 export default function Home() {
   const router = useRouter();
   const { user } = useUser();
+  const { showRating } = useRating();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -134,6 +137,8 @@ export default function Home() {
         if (response.ok) {
           setFavorites([...favorites, propertyId]);
           toast.success("Added to favorites");
+          // Trigger rating popup for demo purposes
+          showRating("Adding to Favorites");
         }
       }
     } catch (error) {
@@ -160,70 +165,11 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <HeroSection />
-
-      {/* Search Section - Modern Design */}
-      <section
-        id="search-section"
-        className="py-16 px-4 bg-gradient-to-br from-primary/5 via-primary/10 to-background"
-      >
-        <div className="container max-w-4xl mx-auto">
-          <div className="text-center space-y-6">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-              Where do you want to live?
-            </h2>
-
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-                <Input
-                  type="text"
-                  placeholder="Search by city, area, or locality..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="pl-12 pr-4 h-14 bg-background border-2 text-lg shadow-lg focus-visible:ring-2"
-                />
-                <Button
-                  onClick={handleSearch}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-10"
-                >
-                  Search
-                </Button>
-              </div>
-            </div>
-
-            {/* Quick Categories */}
-            <div className="flex flex-wrap gap-2 justify-center pt-4">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push("/properties?gender_type=Male")}
-                className="rounded-full"
-              >
-                Male PG
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push("/properties?gender_type=Female")}
-                className="rounded-full"
-              >
-                Female PG
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push("/properties?gender_type=Unisex")}
-                className="rounded-full"
-              >
-                Unisex PG
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSearch={handleSearch}
+      />
 
       {/* Featured Properties - Clean Design */}
       <section className="py-20 px-4">
@@ -284,16 +230,18 @@ export default function Home() {
                       className="absolute top-3 right-3 p-2 bg-background/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-background transition-colors z-10"
                     >
                       <Heart
-                        className={`h-5 w-5 ${
-                          favorites.includes(property.id)
-                            ? "fill-red-500 text-red-500"
-                            : "text-foreground"
-                        }`}
+                        className={`h-5 w-5 ${favorites.includes(property.id)
+                          ? "fill-red-500 text-red-500"
+                          : "text-foreground"
+                          }`}
                       />
                     </button>
-                    <Badge className="absolute bottom-3 left-3 bg-background/90 backdrop-blur-sm text-foreground border">
-                      {property.genderType}
-                    </Badge>
+                    <div className="absolute top-3 left-3 z-10">
+                      <PropertyTierBadge price={property.startingPrice || 0} />
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-background/90 p-2 rounded-full shadow-md backdrop-blur-sm border" title={property.genderType}>
+                      <GenderIcon type={property.genderType} className="text-foreground" />
+                    </div>
                   </div>
                   <CardContent className="p-5 space-y-3">
                     <div>

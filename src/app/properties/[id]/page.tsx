@@ -6,11 +6,13 @@ import { MapPin, Heart, Star, Wifi, UtensilsCrossed, Car, Wind, Phone, MessageCi
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
 import Image from "next/image";
+import { PropertyTierBadge, getTier } from "@/components/PropertyTierBadge";
+import { GenderIcon } from "@/components/GenderIcon";
 
 interface Property {
   id: number;
@@ -32,6 +34,7 @@ interface Property {
   managerPhone?: string;
   cancellationPolicy?: string;
   refundPolicy?: string;
+  images?: string[];
 }
 
 interface RoomType {
@@ -64,13 +67,14 @@ export default function PropertyDetailsPage() {
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const [showChatDialog, setShowChatDialog] = useState(false);
 
-const propertyImages = [
-  property?.thumbnailImage || "/placeholder.svg",
-  "/placeholder.svg",
-  "/placeholder.svg",
-  "/placeholder.svg",
-];
+  const propertyImages = property?.images && property.images.length > 0
+    ? property.images
+    : [property?.thumbnailImage || "/placeholder.svg"];
 
+  // If we only have one image and it's the thumbnail, we might want to show placeholders if that's the design intent,
+  // but usually showing available images is better. The original code had placeholders.
+  // Let's stick to what we have or fallback to placeholders if needed.
+  // The original code had a hardcoded array with placeholders. Let's try to be more dynamic but robust.
 
   useEffect(() => {
     if (params.id) {
@@ -82,48 +86,59 @@ const propertyImages = [
       }
     }
   }, [params.id, user]);
-const fetchPropertyDetails = async () => {
-  try {
-    const response = await fetch(`/api/properties/${params.id}`);
-    if (response.ok) {
-      const data = await response.json();
 
-      // Parse amenities
-      let amenities: string[] = [];
-      try {
-        if (typeof data.amenities === "string") {
-          amenities = JSON.parse(data.amenities);
-        } else if (Array.isArray(data.amenities)) {
-          amenities = data.amenities;
+  const fetchPropertyDetails = async () => {
+    try {
+      const response = await fetch(`/api/properties/${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+
+        // Parse amenities
+        let amenities: string[] = [];
+        try {
+          if (typeof data.amenities === "string") {
+            amenities = JSON.parse(data.amenities);
+          } else if (Array.isArray(data.amenities)) {
+            amenities = data.amenities;
+          }
+        } catch {
+          amenities = [];
         }
-      } catch {
-        amenities = [];
-      }
 
-      // Parse images
-      let images: string[] = [];
-      try {
-        if (typeof data.images === "string") {
-          images = JSON.parse(data.images);
-        } else if (Array.isArray(data.images)) {
-          images = data.images;
+        // Parse images
+        let images: string[] = [];
+        try {
+          if (typeof data.images === "string") {
+            images = JSON.parse(data.images);
+          } else if (Array.isArray(data.images)) {
+            images = data.images;
+          }
+        } catch {
+          images = [];
         }
-      } catch {
-        images = [];
-      }
 
-      setProperty({ ...data, amenities, images });
-    } else {
-      toast.error("Property not found");
-      router.push("/properties");
+        // Ensure thumbnail is included in images if not present
+        if (data.thumbnailImage && !images.includes(data.thumbnailImage)) {
+          images.unshift(data.thumbnailImage);
+        }
+
+        // If no images, use placeholders
+        if (images.length === 0) {
+          images = ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"];
+        }
+
+        setProperty({ ...data, amenities, images });
+      } else {
+        toast.error("Property not found");
+        router.push("/properties");
+      }
+    } catch (error) {
+      console.error("Failed to fetch property:", error);
+      toast.error("Failed to load property details");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Failed to fetch property:", error);
-    toast.error("Failed to load property details");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const fetchRoomTypes = async () => {
     try {
@@ -142,11 +157,9 @@ const fetchPropertyDetails = async () => {
       const response = await fetch(`/api/reviews/property/${params.id}`);
       if (response.ok) {
         const data = await response.json();
-        // API returns { reviews: [...], summary: {...} }
         if (data.reviews && Array.isArray(data.reviews)) {
           setReviews(data.reviews);
         } else {
-          console.warn("Reviews data is not in expected format:", data);
           setReviews([]);
         }
       }
@@ -227,7 +240,6 @@ const fetchPropertyDetails = async () => {
       toast.error("Contact number not available");
       return;
     }
-    // Copy phone number to clipboard
     navigator.clipboard.writeText(property.managerPhone);
     toast.success(`Phone number copied: ${property.managerPhone}`);
     setShowContactDialog(true);
@@ -249,13 +261,6 @@ const fetchPropertyDetails = async () => {
       return;
     }
     setShowScheduleDialog(true);
-  };
-
-  const amenityIcons: Record<string, any> = {
-    WiFi: <Wifi className="h-5 w-5" />,
-    Food: <UtensilsCrossed className="h-5 w-5" />,
-    Parking: <Car className="h-5 w-5" />,
-    AC: <Wind className="h-5 w-5" />,
   };
 
   const allAmenities = [
@@ -304,7 +309,7 @@ const fetchPropertyDetails = async () => {
           <div className="lg:col-span-3">
             <Carousel className="w-full">
               <CarouselContent>
-                {propertyImages.map((image, index) => (
+                {property.images?.map((image, index) => (
                   <CarouselItem key={index}>
                     <div className="relative h-[500px] rounded-xl overflow-hidden border">
                       <Image
@@ -331,7 +336,11 @@ const fetchPropertyDetails = async () => {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <Badge className="bg-teal-500 text-white">{property.genderType}</Badge>
+                      <PropertyTierBadge price={property.startingPrice || 0} />
+                      <div className="flex items-center gap-1 bg-teal-50 text-teal-700 px-2 py-1 rounded-full border border-teal-200 text-xs font-medium">
+                        <GenderIcon type={property.genderType} className="w-4 h-4" />
+                        <span>{property.genderType}</span>
+                      </div>
                       {property.isAvailable && (
                         <Badge variant="outline" className="border-green-500 text-green-600">
                           <Check className="h-3 w-3 mr-1" />
@@ -352,9 +361,8 @@ const fetchPropertyDetails = async () => {
                     className="shrink-0"
                   >
                     <Heart
-                      className={`h-5 w-5 ${
-                        isFavorite ? "fill-red-500 text-red-500" : ""
-                      }`}
+                      className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""
+                        }`}
                     />
                   </Button>
                 </div>
@@ -382,7 +390,7 @@ const fetchPropertyDetails = async () => {
                 </div>
 
                 {/* Primary CTA */}
-                <Button 
+                <Button
                   onClick={scrollToRoomTypes}
                   size="lg"
                   className="w-full bg-teal-500 hover:bg-teal-600 text-base h-12"
@@ -399,7 +407,7 @@ const fetchPropertyDetails = async () => {
                 <CardTitle className="text-base">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button 
+                <Button
                   onClick={handleCallNow}
                   variant="outline"
                   className="w-full justify-start gap-2"
@@ -408,18 +416,18 @@ const fetchPropertyDetails = async () => {
                   <Phone className="h-4 w-4" />
                   Call Property Manager
                 </Button>
-                <Button 
+                <Button
                   onClick={handleScheduleVisit}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full justify-start gap-2"
                   size="sm"
                 >
                   <Calendar className="h-4 w-4" />
                   Schedule a Visit
                 </Button>
-                <Button 
+                <Button
                   onClick={handleChatManager}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full justify-start gap-2"
                   size="sm"
                 >
@@ -546,11 +554,10 @@ const fetchPropertyDetails = async () => {
                                 onClick={() => handleBooking(room.id)}
                                 disabled={room.availableRooms === 0}
                                 size="lg"
-                                className={`${
-                                  room.availableRooms === 0
-                                    ? 'bg-gray-300 cursor-not-allowed'
-                                    : 'bg-teal-500 hover:bg-teal-600'
-                                } h-12 px-8 font-semibold min-w-[160px]`}
+                                className={`${room.availableRooms === 0
+                                  ? 'bg-gray-300 cursor-not-allowed'
+                                  : 'bg-teal-500 hover:bg-teal-600'
+                                  } h-12 px-8 font-semibold min-w-[160px]`}
                               >
                                 {room.availableRooms === 0 ? 'Fully Booked' : 'Book Now'}
                                 {room.availableRooms > 0 && <ArrowRight className="ml-2 h-4 w-4" />}
@@ -562,7 +569,7 @@ const fetchPropertyDetails = async () => {
                         {/* Availability indicator bar */}
                         {room.availableRooms > 0 && (
                           <div className="h-1 bg-muted">
-                            <div 
+                            <div
                               className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all"
                               style={{ width: `${(room.availableRooms / room.totalRooms) * 100}%` }}
                             />
@@ -587,11 +594,10 @@ const fetchPropertyDetails = async () => {
                     return (
                       <div
                         key={amenity.name}
-                        className={`flex items-center gap-3 p-4 rounded-lg border transition-all ${
-                          hasAmenity
-                            ? "border-teal-500 bg-teal-50 dark:bg-teal-950/50"
-                            : "border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 opacity-40"
-                        }`}
+                        className={`flex items-center gap-3 p-4 rounded-lg border transition-all ${hasAmenity
+                          ? "border-teal-500 bg-teal-50 dark:bg-teal-950/50"
+                          : "border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 opacity-40"
+                          }`}
                       >
                         <div className={hasAmenity ? "text-teal-500" : "text-gray-400"}>
                           {hasAmenity ? amenity.icon : <X className="h-5 w-5" />}
@@ -633,10 +639,10 @@ const fetchPropertyDetails = async () => {
                           <div>
                             <p className="font-semibold">{review.userName}</p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(review.createdAt).toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
+                              {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
                               })}
                             </p>
                           </div>
@@ -691,8 +697,8 @@ const fetchPropertyDetails = async () => {
                   </p>
                 </div>
                 {property.latitude && property.longitude && (
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full gap-2"
                     size="sm"
                     onClick={() => {
@@ -802,7 +808,7 @@ const fetchPropertyDetails = async () => {
                 <option>Evening (3 PM - 6 PM)</option>
               </select>
             </div>
-            <Button 
+            <Button
               className="w-full bg-teal-500 hover:bg-teal-600"
               onClick={() => {
                 toast.success("Visit request sent! Manager will contact you soon.");
@@ -841,7 +847,7 @@ const fetchPropertyDetails = async () => {
                   }
                 }}
               />
-              <Button 
+              <Button
                 className="bg-teal-500 hover:bg-teal-600"
                 onClick={() => toast.info("Chat feature will be available soon!")}
               >

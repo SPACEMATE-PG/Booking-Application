@@ -14,7 +14,7 @@ const DATA = [
       "Discover verified PG accommodations near you. Filter by budget, amenities, and room type.",
     icon: Home,
     image:
-      "https://cdn.dribbble.com/userupload/17012423/file/original-b32f5cad209e4a8bab9a1e082c9e2459.jpg?resize=1504x1128&vertical=center",
+      "/5d5a5c24-a9f3-4e4f-9436-1dda809dac86.jpg",
   },
   {
     title: "Book in Minutes",

@@ -1,14 +1,21 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import React from "react";
 import { useRouter } from "next/navigation";
 
 import { LineShadowText } from "@/components/magicui/line-shadow-text";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
+  onSearch?: () => void;
+}
+
+const HeroSection = ({ searchQuery, setSearchQuery, onSearch }: HeroSectionProps) => {
   const router = useRouter();
 
   return (
@@ -36,29 +43,47 @@ const HeroSection = () => {
           <p className="bg-background text-muted-foreground/80 mt-5 max-w-xl">
             Your perfect home away from home. Search, compare, and book with ease.
           </p>
-          <div className="flex gap-4">
-            <Button
-              variant="secondary"
-              onClick={() => router.push('/properties')}
-              className="text-md group flex w-fit items-center justify-center gap-2 rounded-full px-4 py-1 tracking-tight"
-            >
-              <span>Explore Listings</span>
-              <ArrowRight className="size-4 -rotate-45 transition-all ease-out group-hover:ml-3 group-hover:rotate-0" />
-            </Button>
-            <Button
-              variant="default"
-              onClick={() => {
-                const searchSection = document.getElementById('search-section');
-                if (searchSection) {
-                  searchSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="text-md group flex w-fit items-center justify-center gap-2 rounded-full px-4 py-1 tracking-tight"
-            >
-              <span>Get Started Now</span>
-              <ArrowRight className="size-4 -rotate-45 transition-all ease-out group-hover:ml-3 group-hover:rotate-0" />
-            </Button>
+
+          {/* Search Section */}
+          <div className="relative w-full max-w-2xl mx-auto mt-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-primary/10 to-primary/30 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition duration-500"></div>
+              <div className="relative flex items-center bg-background/90 backdrop-blur-xl border border-primary/10 rounded-full shadow-2xl p-2 transition-all duration-300 hover:border-primary/20 hover:shadow-primary/10 ring-1 ring-white/20">
+                <Search className="ml-4 h-5 w-5 text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search by city, area, or locality..."
+                  className="flex-1 bg-transparent border-none focus:outline-none px-4 py-3 text-base placeholder:text-muted-foreground/70 w-full"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery?.(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && onSearch?.()}
+                />
+                <Button
+                  onClick={onSearch}
+                  size="lg"
+                  className="rounded-full px-8 shadow-lg hover:shadow-primary/25 transition-all duration-300 hover:scale-105"
+                >
+                  Search
+                </Button>
+              </div>
+            </div>
+
+            {/* Quick Filters */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+              <span className="text-sm text-muted-foreground/80 font-medium">Popular:</span>
+              {['Male', 'Female', 'Unisex'].map((type) => (
+                <Badge
+                  key={type}
+                  variant="secondary"
+                  className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-300 px-4 py-1.5 rounded-full border border-border/50 bg-background/50 backdrop-blur-sm hover:scale-105 hover:border-primary/20"
+                  onClick={() => router.push(`/properties?gender_type=${type}`)}
+                >
+                  {type}
+                </Badge>
+              ))}
+            </div>
           </div>
+
         </div>
       </div>
     </section>
