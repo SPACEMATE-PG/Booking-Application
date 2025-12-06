@@ -13,7 +13,7 @@ async function main() {
             transactionId: 'UPI20240115ABC123',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/1.pdf',
-            createdAt: new Date('2024-01-15T10:30:00').toISOString(),
+            createdAt: new Date('2024-01-15T10:30:00'),
         },
         {
             userId: 2,
@@ -24,7 +24,7 @@ async function main() {
             transactionId: 'CRD20240116XYZ456',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/2.pdf',
-            createdAt: new Date('2024-01-16T14:20:00').toISOString(),
+            createdAt: new Date('2024-01-16T14:20:00'),
         },
         {
             userId: 3,
@@ -35,7 +35,7 @@ async function main() {
             transactionId: 'NB20240117DEF789',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/3.pdf',
-            createdAt: new Date('2024-01-17T09:15:00').toISOString(),
+            createdAt: new Date('2024-01-17T09:15:00'),
         },
         {
             userId: 4,
@@ -46,7 +46,7 @@ async function main() {
             transactionId: 'UPI20240118GHI012',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/4.pdf',
-            createdAt: new Date('2024-01-18T11:45:00').toISOString(),
+            createdAt: new Date('2024-01-18T11:45:00'),
         },
         {
             userId: 5,
@@ -57,7 +57,7 @@ async function main() {
             transactionId: 'CRD20240119JKL345',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/5.pdf',
-            createdAt: new Date('2024-01-19T16:30:00').toISOString(),
+            createdAt: new Date('2024-01-19T16:30:00'),
         },
         {
             userId: 6,
@@ -68,7 +68,7 @@ async function main() {
             transactionId: 'WLT20240120MNO678',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/6.pdf',
-            createdAt: new Date('2024-01-20T13:00:00').toISOString(),
+            createdAt: new Date('2024-01-20T13:00:00'),
         },
         {
             userId: 7,
@@ -79,7 +79,7 @@ async function main() {
             transactionId: 'UPI20240121PQR901',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/7.pdf',
-            createdAt: new Date('2024-01-21T10:00:00').toISOString(),
+            createdAt: new Date('2024-01-21T10:00:00'),
         },
         {
             userId: 8,
@@ -90,7 +90,7 @@ async function main() {
             transactionId: 'NB20240122STU234',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/8.pdf',
-            createdAt: new Date('2024-01-22T15:20:00').toISOString(),
+            createdAt: new Date('2024-01-22T15:20:00'),
         },
         {
             userId: 9,
@@ -101,7 +101,7 @@ async function main() {
             transactionId: 'CRD20240123VWX567',
             status: 'pending',
             invoiceUrl: null,
-            createdAt: new Date('2024-01-23T12:10:00').toISOString(),
+            createdAt: new Date('2024-01-23T12:10:00'),
         },
         {
             userId: 10,
@@ -112,7 +112,7 @@ async function main() {
             transactionId: 'UPI20240124YZA890',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/10.pdf',
-            createdAt: new Date('2024-01-24T09:30:00').toISOString(),
+            createdAt: new Date('2024-01-24T09:30:00'),
         },
         {
             userId: 11,
@@ -123,7 +123,7 @@ async function main() {
             transactionId: 'UPI20240125BCD123',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/11.pdf',
-            createdAt: new Date('2024-01-25T14:45:00').toISOString(),
+            createdAt: new Date('2024-01-25T14:45:00'),
         },
         {
             userId: 12,
@@ -134,7 +134,7 @@ async function main() {
             transactionId: 'CRD20240126EFG456',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/12.pdf',
-            createdAt: new Date('2024-01-26T11:20:00').toISOString(),
+            createdAt: new Date('2024-01-26T11:20:00'),
         },
         {
             userId: 13,
@@ -145,7 +145,7 @@ async function main() {
             transactionId: 'NB20240127HIJ789',
             status: 'failed',
             invoiceUrl: null,
-            createdAt: new Date('2024-01-27T16:00:00').toISOString(),
+            createdAt: new Date('2024-01-27T16:00:00'),
         },
         {
             userId: 14,
@@ -156,7 +156,7 @@ async function main() {
             transactionId: 'UPI20240128KLM012',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/14.pdf',
-            createdAt: new Date('2024-01-28T10:15:00').toISOString(),
+            createdAt: new Date('2024-01-28T10:15:00'),
         },
         {
             userId: 15,
@@ -167,7 +167,7 @@ async function main() {
             transactionId: 'WLT20240129NOP345',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/15.pdf',
-            createdAt: new Date('2024-01-29T13:40:00').toISOString(),
+            createdAt: new Date('2024-01-29T13:40:00'),
         },
         {
             userId: 1,
@@ -178,7 +178,7 @@ async function main() {
             transactionId: 'CRD20240130QRS678',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/16.pdf',
-            createdAt: new Date('2024-01-30T15:25:00').toISOString(),
+            createdAt: new Date('2024-01-30T15:25:00'),
         },
         {
             userId: 3,
@@ -189,7 +189,7 @@ async function main() {
             transactionId: 'UPI20240131TUV901',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/17.pdf',
-            createdAt: new Date('2024-01-31T09:50:00').toISOString(),
+            createdAt: new Date('2024-01-31T09:50:00'),
         },
         {
             userId: 5,
@@ -200,7 +200,7 @@ async function main() {
             transactionId: 'NB20240201WXY234',
             status: 'pending',
             invoiceUrl: null,
-            createdAt: new Date('2024-02-01T12:00:00').toISOString(),
+            createdAt: new Date('2024-02-01T12:00:00'),
         },
         {
             userId: 7,
@@ -211,7 +211,7 @@ async function main() {
             transactionId: 'UPI20240202ZAB567',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/19.pdf',
-            createdAt: new Date('2024-02-02T14:30:00').toISOString(),
+            createdAt: new Date('2024-02-02T14:30:00'),
         },
         {
             userId: 9,
@@ -222,7 +222,7 @@ async function main() {
             transactionId: 'CRD20240203CDE890',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/20.pdf',
-            createdAt: new Date('2024-02-03T11:15:00').toISOString(),
+            createdAt: new Date('2024-02-03T11:15:00'),
         },
         // Rent Payments (8 records)
         {
@@ -234,7 +234,7 @@ async function main() {
             transactionId: 'UPI20240215FGH123',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/21.pdf',
-            createdAt: new Date('2024-02-15T10:00:00').toISOString(),
+            createdAt: new Date('2024-02-15T10:00:00'),
         },
         {
             userId: 2,
@@ -245,7 +245,7 @@ async function main() {
             transactionId: 'CRD20240216IJK456',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/22.pdf',
-            createdAt: new Date('2024-02-16T11:30:00').toISOString(),
+            createdAt: new Date('2024-02-16T11:30:00'),
         },
         {
             userId: 4,
@@ -256,7 +256,7 @@ async function main() {
             transactionId: 'NB20240217LMN789',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/23.pdf',
-            createdAt: new Date('2024-02-17T09:45:00').toISOString(),
+            createdAt: new Date('2024-02-17T09:45:00'),
         },
         {
             userId: 5,
@@ -267,7 +267,7 @@ async function main() {
             transactionId: 'UPI20240218OPQ012',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/24.pdf',
-            createdAt: new Date('2024-02-18T14:20:00').toISOString(),
+            createdAt: new Date('2024-02-18T14:20:00'),
         },
         {
             userId: 7,
@@ -278,7 +278,7 @@ async function main() {
             transactionId: 'CRD20240219RST345',
             status: 'pending',
             invoiceUrl: null,
-            createdAt: new Date('2024-02-19T16:10:00').toISOString(),
+            createdAt: new Date('2024-02-19T16:10:00'),
         },
         {
             userId: 8,
@@ -289,7 +289,7 @@ async function main() {
             transactionId: 'UPI20240220UVW678',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/26.pdf',
-            createdAt: new Date('2024-02-20T10:30:00').toISOString(),
+            createdAt: new Date('2024-02-20T10:30:00'),
         },
         {
             userId: 10,
@@ -300,7 +300,7 @@ async function main() {
             transactionId: 'WLT20240221XYZ901',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/27.pdf',
-            createdAt: new Date('2024-02-21T13:15:00').toISOString(),
+            createdAt: new Date('2024-02-21T13:15:00'),
         },
         {
             userId: 11,
@@ -311,7 +311,7 @@ async function main() {
             transactionId: 'NB20240222ABC234',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/28.pdf',
-            createdAt: new Date('2024-02-22T15:45:00').toISOString(),
+            createdAt: new Date('2024-02-22T15:45:00'),
         },
         // Refund Payments (2 records)
         {
@@ -323,7 +323,7 @@ async function main() {
             transactionId: 'RFND20240225DEF567',
             status: 'success',
             invoiceUrl: 'https://example.com/invoice/29.pdf',
-            createdAt: new Date('2024-02-25T11:00:00').toISOString(),
+            createdAt: new Date('2024-02-25T11:00:00'),
         },
         {
             userId: 13,
@@ -334,7 +334,7 @@ async function main() {
             transactionId: 'RFND20240226GHI890',
             status: 'pending',
             invoiceUrl: null,
-            createdAt: new Date('2024-02-26T14:30:00').toISOString(),
+            createdAt: new Date('2024-02-26T14:30:00'),
         },
     ];
 
