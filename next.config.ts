@@ -17,7 +17,6 @@ const nextConfig: NextConfig = {
     ],
   },
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
-<<<<<<< HEAD
   // turbopack: {
   //   rules: {
   //     "*.{jsx,tsx}": {
@@ -25,15 +24,6 @@ const nextConfig: NextConfig = {
   //     }
   //   }
   // }
-=======
-  turbopack: {
-    rules: {
-      "*.{jsx,tsx}": {
-        loaders: [LOADER]
-      }
-    }
-  }
->>>>>>> ffe917455317868798f6457dcbe39bf5f75bac81
 };
 
 export default nextConfig;
