@@ -3,11 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-<<<<<<< HEAD
     "dev": "next dev",
-=======
-    "dev": "next dev --turbopack",
->>>>>>> ffe917455317868798f6457dcbe39bf5f75bac81
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -47,10 +43,6 @@
     "cmdk": "^1.1.1",
     "cobe": "^0.6.5",
     "date-fns": "^4.1.0",
-<<<<<<< HEAD
-=======
-    "drizzle-kit": "^0.18.1",
->>>>>>> ffe917455317868798f6457dcbe39bf5f75bac81
     "drizzle-orm": "^0.44.7",
     "embla-carousel-auto-scroll": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
@@ -88,10 +80,7 @@
     "@types/react-dom": "^19",
     "@types/react-responsive-masonry": "^2.6.0",
     "dotenv": "^17.2.3",
-<<<<<<< HEAD
     "drizzle-kit": "^0.31.8",
-=======
->>>>>>> ffe917455317868798f6457dcbe39bf5f75bac81
     "eslint": "^9.36.0",
     "eslint-config-next": "^16.0.8",
     "estree-walker": "2.0.2",
