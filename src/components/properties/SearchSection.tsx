@@ -33,21 +33,24 @@ export function SearchSection({ searchQuery, setSearchQuery, setShowFilters, sho
                 </div>
 
                 <div className="max-w-3xl mx-auto">
-                    <div className="flex gap-3 p-2 bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700 backdrop-blur-xl transition-all hover:shadow-2xl hover:bg-white/90 dark:hover:bg-gray-800/90">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+                    <div className="flex gap-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-2xl border border-gray-100 dark:border-gray-700 transition-all hover:shadow-3xl">
+                        <div className="relative flex-1 group">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-teal-500 transition-colors" />
                             <Input
                                 type="text"
                                 placeholder="Search by area, landmark, or property name..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-12 h-12 border-none bg-transparent focus-visible:ring-0 text-lg placeholder:text-gray-400"
+                                className="pl-14 h-14 w-full border-none bg-transparent focus-visible:ring-0 text-lg placeholder:text-gray-400 rounded-full"
                             />
                         </div>
                         <Button
                             onClick={() => setShowFilters(!showFilters)}
                             variant={showFilters ? "secondary" : "default"}
-                            className="h-12 px-6 rounded-xl gap-2 bg-teal-600 hover:bg-teal-700 text-white shadow-md hover:shadow-lg transition-all"
+                            className={`h-14 px-8 rounded-full gap-2 transition-all duration-300 font-medium text-base ${showFilters
+                                    ? "bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400"
+                                    : "bg-teal-600 hover:bg-teal-700 text-white shadow-lg hover:shadow-teal-500/25"
+                                }`}
                         >
                             <Filter className="h-5 w-5" />
                             <span className="hidden sm:inline">Filters</span>

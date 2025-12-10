@@ -13,6 +13,13 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { PropertyTierBadge, getTier } from "@/components/PropertyTierBadge";
 import { GenderIcon } from "@/components/GenderIcon";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { FooterSection } from "@/components/FooterSection";
 
 interface Property {
   id: number;
@@ -304,16 +311,16 @@ export default function PropertyDetailsPage() {
         </div>
       </div>
 
-      <div className="container max-w-7xl mx-auto px-4 py-8">
-        {/* Property Header with Image Gallery */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-          {/* Main Image - Takes 3 columns */}
-          <div className="lg:col-span-3">
+      <div className="container max-w-7xl mx-auto px-4 py-4 min-h-[calc(100vh-80px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Property Header with Image Gallery */}
             <Carousel className="w-full">
               <CarouselContent>
                 {property.images?.map((image, index) => (
                   <CarouselItem key={index}>
-                    <div className="relative h-[500px] rounded-xl overflow-hidden border">
+                    <div className="relative h-[400px] rounded-xl overflow-hidden border">
                       <Image
                         src={image}
                         alt={`${property.name} - Image ${index + 1}`}
@@ -328,251 +335,117 @@ export default function PropertyDetailsPage() {
               <CarouselPrevious className="left-4" />
               <CarouselNext className="right-4" />
             </Carousel>
-          </div>
 
-          {/* Property Info & CTA - Takes 2 columns */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Property Title Card */}
-            <Card className="border-2">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <PropertyTierBadge price={property.startingPrice || 0} />
-                      <div className="flex items-center gap-1 bg-teal-50 text-teal-700 px-2 py-1 rounded-full border border-teal-200 text-xs font-medium">
-                        <GenderIcon type={property.genderType} className="w-4 h-4" />
-                        <span>{property.genderType}</span>
-                      </div>
-                      {property.isAvailable && (
-                        <Badge variant="outline" className="border-green-500 text-green-600">
-                          <Check className="h-3 w-3 mr-1" />
-                          Available
-                        </Badge>
-                      )}
-                    </div>
-                    <h1 className="text-2xl lg:text-3xl font-bold mb-2">{property.name}</h1>
-                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                      <span>{property.address}, {property.locality}, {property.city}</span>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={toggleFavorite}
-                    className="shrink-0"
-                  >
-                    <Heart
-                      className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""
-                        }`}
-                    />
-                  </Button>
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center gap-3 pt-2 border-t">
-                  <div className="flex items-center gap-1.5">
-                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    <span className="text-xl font-bold">{property.rating}</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {property.totalReviews} {property.totalReviews === 1 ? 'review' : 'reviews'}
-                  </span>
-                </div>
-
-                {/* Price */}
-                <div className="pt-2 border-t">
-                  <p className="text-sm text-muted-foreground mb-1">Starting from</p>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-4xl font-bold text-teal-500">
-                      ₹{property.startingPrice?.toLocaleString() || '0'}
+            {/* Description - Accordion */}
+            <Card className="shadow-none">
+              <Accordion type="single" collapsible defaultValue="about">
+                <AccordionItem value="about" className="border-none px-4">
+                  <AccordionTrigger className="text-lg font-semibold hover:no-underline py-3">
+                    About This Property
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-muted-foreground leading-relaxed text-sm pt-0 text-justify pb-2">
+                      {property.description}
                     </p>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </div>
-
-                {/* Primary CTA */}
-                <Button
-                  onClick={scrollToRoomTypes}
-                  size="lg"
-                  className="w-full bg-teal-500 hover:bg-teal-600 text-base h-12"
-                >
-                  View Available Rooms
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Quick Contact Actions */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  onClick={handleCallNow}
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                  size="sm"
-                >
-                  <Phone className="h-4 w-4" />
-                  Call Property Manager
-                </Button>
-                <Button
-                  onClick={handleScheduleVisit}
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                  size="sm"
-                >
-                  <Calendar className="h-4 w-4" />
-                  Schedule a Visit
-                </Button>
-                <Button
-                  onClick={handleChatManager}
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                  size="sm"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Chat with Manager
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Trust Indicators */}
-            <Card className="bg-muted/50">
-              <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-teal-500" />
-                    <span className="text-xs">Verified Property</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-teal-500" />
-                    <span className="text-xs">Instant Booking</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-teal-500" />
-                    <span className="text-xs">Professional Mgmt</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-teal-500" />
-                    <span className="text-xs">Premium Location</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>About This Property</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">{property.description}</p>
-              </CardContent>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </Card>
 
             {/* ROOM TYPES - FEATURED SECTION */}
-            <Card id="room-types-section" className="border-2 border-teal-500 shadow-lg scroll-mt-20">
-              <CardHeader className="bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/50 dark:to-cyan-950/50 border-b">
+            <Card id="room-types-section" className="border-2 border-teal-500/20 shadow-lg scroll-mt-20 overflow-hidden">
+              <CardHeader className="bg-teal-50/50 dark:bg-teal-950/20 border-b py-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-2xl mb-1">Available Rooms</CardTitle>
-                    <p className="text-sm text-muted-foreground">Choose your preferred room type and book instantly</p>
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                      <Building2 className="h-5 w-5 text-teal-600" />
+                      Available Rooms
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">Select a room to book instantly</p>
                   </div>
-                  <Building2 className="h-8 w-8 text-teal-500" />
                 </div>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 {roomTypes.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                    <p className="text-muted-foreground">No room types available at the moment</p>
-                    <p className="text-sm text-muted-foreground mt-1">Please check back later or contact the property manager</p>
+                  <div className="text-center py-10">
+                    <Building2 className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-30" />
+                    <p className="text-muted-foreground text-sm">No rooms available currently</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {roomTypes.map((room, index) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {roomTypes.map((room) => (
                       <div
                         key={room.id}
-                        className="group relative overflow-hidden rounded-xl border-2 hover:border-teal-500 transition-all bg-card hover:shadow-md"
+                        className="group relative flex flex-col justify-between rounded-xl border bg-card p-4 hover:border-teal-500 hover:shadow-md transition-all duration-300"
                       >
-                        <div className="p-6">
-                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                            {/* Room Info */}
-                            <div className="flex-1 space-y-3">
-                              <div className="flex items-center gap-3">
-                                <div className="h-12 w-12 rounded-lg bg-teal-500/10 flex items-center justify-center">
-                                  <Building2 className="h-6 w-6 text-teal-500" />
-                                </div>
-                                <div>
-                                  <h3 className="text-xl font-bold">{room.type}</h3>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    {room.availableRooms > 0 ? (
-                                      <>
-                                        <Badge variant="outline" className="border-green-500 text-green-600 text-xs">
-                                          <Check className="h-3 w-3 mr-1" />
-                                          {room.availableRooms} Available
-                                        </Badge>
-                                        <span className="text-xs text-muted-foreground">
-                                          of {room.totalRooms} total
-                                        </span>
-                                      </>
-                                    ) : (
-                                      <Badge variant="outline" className="border-red-500 text-red-600 text-xs">
-                                        <X className="h-3 w-3 mr-1" />
-                                        Fully Booked
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Pricing */}
-                              <div className="flex items-baseline gap-2">
-                                <span className="text-4xl font-bold text-teal-500">
-                                  ₹{room.pricePerMonth.toLocaleString()}
-                                </span>
-                                <span className="text-muted-foreground">/month</span>
-                              </div>
-
-                              {room.availableRooms > 0 && room.availableRooms <= 3 && (
-                                <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                                  ⚡ Only {room.availableRooms} {room.availableRooms === 1 ? 'room' : 'rooms'} left!
-                                </p>
-                              )}
-                            </div>
-
-                            {/* CTA Button */}
-                            <div className="flex items-center lg:flex-col gap-3">
-                              <Button
-                                onClick={() => handleBooking(room.id)}
-                                disabled={room.availableRooms === 0}
-                                size="lg"
-                                className={`${room.availableRooms === 0
-                                  ? 'bg-gray-300 cursor-not-allowed'
-                                  : 'bg-teal-500 hover:bg-teal-600'
-                                  } h-12 px-8 font-semibold min-w-[160px]`}
+                        {/* Top: Icon & Basic Info */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="h-10 w-10 rounded-lg bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center shrink-0 text-teal-600 group-hover:scale-105 transition-transform">
+                            <Building2 className="h-5 w-5" />
+                          </div>
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <h3 className="font-semibold text-base truncate" title={room.type}>
+                              {room.type}
+                            </h3>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge
+                                variant={room.availableRooms > 0 ? "outline" : "secondary"}
+                                className={`text-[10px] h-4 px-1.5 ${room.availableRooms > 0
+                                  ? "border-green-500/50 text-green-600 bg-green-50 dark:bg-green-950/20"
+                                  : ""
+                                  }`}
                               >
-                                {room.availableRooms === 0 ? 'Fully Booked' : 'Book Now'}
-                                {room.availableRooms > 0 && <ArrowRight className="ml-2 h-4 w-4" />}
-                              </Button>
+                                {room.availableRooms > 0 ? (
+                                  <span className="flex items-center gap-1">
+                                    <Check className="h-2 w-2" />
+                                    {room.availableRooms} Left
+                                  </span>
+                                ) : (
+                                  "Sold Out"
+                                )}
+                              </Badge>
+                              {room.availableRooms > 0 && room.availableRooms <= 3 && (
+                                <span className="text-[10px] text-orange-600 font-medium animate-pulse">
+                                  Fast Filling
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
 
-                        {/* Availability indicator bar */}
+                        {/* Bottom: Price & Action */}
+                        <div className="mt-auto pt-3 border-t border-dashed">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex flex-col">
+                              <span className="text-xs text-muted-foreground">Starting at</span>
+                              <div className="flex items-baseline gap-0.5">
+                                <span className="text-xl font-bold text-teal-600">
+                                  ₹{room.pricePerMonth.toLocaleString()}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground">/mo</span>
+                              </div>
+                            </div>
+
+                            <Button
+                              onClick={() => handleBooking(room.id)}
+                              disabled={room.availableRooms === 0}
+                              size="sm"
+                              className={`font-medium h-9 px-4 ${room.availableRooms === 0
+                                ? "bg-muted text-muted-foreground"
+                                : "bg-teal-600 hover:bg-teal-700 shadow-sm hover:shadow-teal-500/20"
+                                }`}
+                            >
+                              {room.availableRooms === 0 ? "Notify" : "Book"}
+                              {room.availableRooms > 0 && <ArrowRight className="ml-1.5 h-3.5 w-3.5" />}
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar */}
                         {room.availableRooms > 0 && (
-                          <div className="h-1 bg-muted">
+                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted rounded-b-xl overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all"
+                              className="h-full bg-teal-500/50"
                               style={{ width: `${(room.availableRooms / room.totalRooms) * 100}%` }}
                             />
                           </div>
@@ -585,26 +458,38 @@ export default function PropertyDetailsPage() {
             </Card>
 
             {/* Amenities */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Amenities & Facilities</CardTitle>
+            <Card className="shadow-none">
+              <CardHeader className="py-3 px-4 pb-2">
+                <CardTitle className="text-base font-semibold">Amenities & Facilities</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {allAmenities.map((amenity) => {
                     const hasAmenity = property.amenities.includes(amenity.name);
                     return (
                       <div
                         key={amenity.name}
-                        className={`flex items-center gap-3 p-4 rounded-lg border transition-all ${hasAmenity
-                          ? "border-teal-500 bg-teal-50 dark:bg-teal-950/50"
-                          : "border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 opacity-40"
+                        className={`flex items-center gap-3 p-2 rounded-lg border transition-all ${hasAmenity
+                          ? "bg-teal-50/40 border-teal-100"
+                          : "bg-gray-50/50 border-transparent opacity-60"
                           }`}
                       >
-                        <div className={hasAmenity ? "text-teal-500" : "text-gray-400"}>
-                          {hasAmenity ? amenity.icon : <X className="h-5 w-5" />}
+                        <div
+                          className={`flex items-center justify-center h-8 w-8 rounded-full shrink-0 ${hasAmenity
+                            ? "bg-teal-100 text-teal-600"
+                            : "bg-gray-200 text-gray-400"
+                            }`}
+                        >
+                          <div className="h-4 w-4">
+                            {hasAmenity ? amenity.icon : <X className="h-4 w-4" />}
+                          </div>
                         </div>
-                        <span className={`font-medium text-sm ${hasAmenity ? "" : "line-through"}`}>
+                        <span
+                          className={`text-xs font-medium truncate ${hasAmenity
+                            ? "text-foreground"
+                            : "text-muted-foreground line-through"
+                            }`}
+                        >
                           {amenity.name}
                         </span>
                       </div>
@@ -615,14 +500,19 @@ export default function PropertyDetailsPage() {
             </Card>
 
             {/* Reviews */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-none">
+              <CardHeader className="py-4 px-6 pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle>Guest Reviews</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-lg">{property.rating}</span>
-                    <span className="text-sm text-muted-foreground">({reviews.length})</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-lg">{property.rating}</span>
+                      <span className="text-sm text-muted-foreground">({reviews.length})</span>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => toast.info("Review submission coming soon!")}>
+                      Write a Review
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -663,58 +553,199 @@ export default function PropertyDetailsPage() {
           </div>
 
           {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Location Map */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Location</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="relative h-48 bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden border">
-                  {property.latitude && property.longitude ? (
-                    <>
-                      <iframe
-                        src={`https://maps.google.com/maps?q=${property.latitude},${property.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                      <div className="absolute inset-0 pointer-events-none" />
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center">
-                        <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-muted-foreground text-sm">Map View</p>
+          <div className="space-y-4 h-fit sticky top-24">
+            {/* Property Title Card */}
+            <Card className="border shadow-none">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <PropertyTierBadge price={property.startingPrice || 0} />
+                      <div className="flex items-center gap-1 bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full border border-teal-200 text-[10px] font-medium uppercase tracking-wider">
+                        <GenderIcon type={property.genderType} className="w-3 h-3" />
+                        <span>{property.genderType}</span>
                       </div>
+                      {property.isAvailable && (
+                        <Badge variant="outline" className="border-green-500 text-green-600 h-5 px-1.5 text-[10px]">
+                          <Check className="h-2.5 w-2.5 mr-1" />
+                          Available
+                        </Badge>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="flex items-start gap-2 text-sm">
-                  <MapPin className="h-4 w-4 mt-0.5 text-teal-500 shrink-0" />
-                  <p className="text-muted-foreground">
-                    {property.address}, {property.locality}, {property.city}
-                  </p>
-                </div>
-                {property.latitude && property.longitude && (
+                    <h1 className="text-xl lg:text-2xl font-bold mb-1 leading-tight">{property.name}</h1>
+                    <div className="flex items-start gap-1.5 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+                      <span>{property.address}, {property.locality}, {property.city}</span>
+                    </div>
+                  </div>
                   <Button
                     variant="outline"
-                    className="w-full gap-2"
-                    size="sm"
-                    onClick={() => {
-                      window.open(
-                        `https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}`,
-                        '_blank'
-                      );
-                    }}
+                    size="icon"
+                    onClick={toggleFavorite}
+                    className="shrink-0"
                   >
-                    <MapPin className="h-4 w-4" />
-                    Open in Google Maps
+                    <Heart
+                      className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : ""
+                        }`}
+                    />
                   </Button>
-                )}
+                </div>
+
+                {/* Rating */}
+                <div className="flex items-center gap-3 pt-2 border-t">
+                  <div className="flex items-center gap-1.5">
+                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    <span className="text-xl font-bold">{property.rating}</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {property.totalReviews} {property.totalReviews === 1 ? 'review' : 'reviews'}
+                  </span>
+                </div>
+
+                {/* Price */}
+                <div className="pt-2 border-t">
+                  <p className="text-sm text-muted-foreground mb-1">Starting from</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-4xl font-bold text-teal-500">
+                      ₹{property.startingPrice?.toLocaleString() || '0'}
+                    </p>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </div>
+
+                {/* Primary CTA */}
+                <div className="sticky bottom-4 z-10 lg:static">
+                  <Button
+                    onClick={scrollToRoomTypes}
+                    size="lg"
+                    className="w-full bg-teal-600 hover:bg-teal-700 text-lg font-bold h-14 shadow-xl shadow-teal-500/20 hover:scale-[1.02] transition-all"
+                  >
+                    View Available Rooms
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
               </CardContent>
+            </Card>
+
+            {/* Quick Contact Actions */}
+            <Card className="shadow-none">
+              <CardHeader className="py-3 px-4 pb-0">
+                <CardTitle className="text-sm">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 p-4 pt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={handleCallNow}
+                    variant="outline"
+                    className="justify-start gap-2 h-9 text-xs"
+                    size="sm"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    Call
+                  </Button>
+                  <Button
+                    onClick={handleChatManager}
+                    variant="outline"
+                    className="justify-start gap-2 h-9 text-xs"
+                    size="sm"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    Chat
+                  </Button>
+                </div>
+                <Button
+                  onClick={handleScheduleVisit}
+                  variant="outline"
+                  className="w-full justify-start gap-2 h-9 text-xs"
+                  size="sm"
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  Schedule Visit
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Trust Indicators */}
+            <Card className="bg-muted/50">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-teal-500" />
+                    <span className="text-xs">Verified Property</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-teal-500" />
+                    <span className="text-xs">Instant Booking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-teal-500" />
+                    <span className="text-xs">Professional Mgmt</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-teal-500" />
+                    <span className="text-xs">Premium Location</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Location Map - Accordion */}
+            <Card>
+              <Accordion type="single" collapsible defaultValue="location">
+                <AccordionItem value="location" className="border-none px-0">
+                  <AccordionTrigger className="px-6 py-4 text-lg font-semibold hover:no-underline">
+                    Location
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6">
+                    <div className="space-y-3">
+                      <div className="relative h-48 bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden border">
+                        {property.latitude && property.longitude ? (
+                          <>
+                            <iframe
+                              src={`https://maps.google.com/maps?q=${property.latitude},${property.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                              width="100%"
+                              height="100%"
+                              style={{ border: 0 }}
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                            />
+                            <div className="absolute inset-0 pointer-events-none" />
+                          </>
+                        ) : (
+                          <div className="flex items-center justify-center h-full">
+                            <div className="text-center">
+                              <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                              <p className="text-muted-foreground text-sm">Map View</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-start gap-2 text-sm">
+                        <MapPin className="h-4 w-4 mt-0.5 text-teal-500 shrink-0" />
+                        <p className="text-muted-foreground">
+                          {property.address}, {property.locality}, {property.city}
+                        </p>
+                      </div>
+                      {property.latitude && property.longitude && (
+                        <Button
+                          variant="outline"
+                          className="w-full gap-2"
+                          size="sm"
+                          onClick={() => {
+                            window.open(
+                              `https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}`,
+                              '_blank'
+                            );
+                          }}
+                        >
+                          <MapPin className="h-4 w-4" />
+                          Open in Google Maps
+                        </Button>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </Card>
 
             {/* Property Policies */}
@@ -899,6 +930,9 @@ export default function PropertyDetailsPage() {
           </div>
         </DialogContent>
       </Dialog>
+      <div className="mt-12">
+        <FooterSection />
+      </div>
     </main>
   );
 }

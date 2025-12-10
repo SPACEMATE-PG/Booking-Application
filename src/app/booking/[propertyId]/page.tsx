@@ -10,9 +10,11 @@ import {
   Wallet,
   CheckCircle2,
   Info,
+  AlertCircle,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -33,7 +35,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -74,6 +82,13 @@ export default function BookingPage() {
   const [paymentMethod, setPaymentMethod] = useState<string>("full");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+
+  // Validation State
+  const [touched, setTouched] = useState({
+    roomType: false,
+    duration: false,
+    moveInDate: false,
+  });
 
   useEffect(() => {
     if (!user) {
@@ -145,7 +160,23 @@ export default function BookingPage() {
     };
   };
 
+  // Progress Calculation
+  const getProgress = () => {
+    let steps = 0;
+    if (selectedRoomType) steps++;
+    if (duration) steps++;
+    if (moveInDate) steps++;
+    if (paymentMethod) steps++;
+    return (steps / 4) * 100;
+  };
+
   const handleBooking = async () => {
+    setTouched({
+      roomType: true,
+      duration: true,
+      moveInDate: true,
+    });
+
     if (!selectedRoomType) {
       toast.error("Please select a room type");
       return;
@@ -250,53 +281,64 @@ export default function BookingPage() {
 
   const calculations = calculateTotal();
   const selectedRoom = getSelectedRoom();
+  const progress = getProgress();
+  const isFormValid = selectedRoomType && duration && moveInDate;
 
   return (
     <main className="min-h-screen bg-background pb-12">
       {/* Header */}
-      <div className="border-b bg-white dark:bg-gray-900">
+      <div className="border-b bg-white dark:bg-gray-900 sticky top-0 z-40 shadow-sm">
         <div className="container max-w-6xl mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back to Property
-          </Button>
+          <div className="flex items-center justify-between mb-2">
+            <Button
+              variant="ghost"
+              onClick={() => router.back()}
+              className="gap-2 -ml-2 text-muted-foreground hover:text-foreground"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back to Property
+            </Button>
+            <span className="text-sm font-medium text-muted-foreground">
+              Step {Math.ceil(progress / 25)} of 4
+            </span>
+          </div>
+          {/* Progress Bar */}
+          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+            <div
+              className="h-full bg-teal-500 transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </div>
 
       <div className="container max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-6">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Complete Your Booking</h1>
           <p className="text-muted-foreground">
-            Review your details and confirm your booking
+            Just a few more details to confirm your stay at {property.name}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Booking Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Property Info */}
             <Card>
-              <CardHeader>
-                <CardTitle>Property Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-4">
-                  <div className="relative h-20 w-20 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex gap-5">
+                  <div className="relative h-24 w-24 bg-gray-200 rounded-xl flex-shrink-0 overflow-hidden border">
                     <Image
                       src={property.thumbnailImage || "/placeholder.jpg"}
                       alt={property.name}
                       fill
-                      sizes="80px"
+                      sizes="96px"
                       className="object-cover"
                     />
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-lg">{property.name}</h3>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="py-1">
+                    <h3 className="font-bold text-xl mb-1">{property.name}</h3>
+                    <p className="text-muted-foreground">
                       {property.address}, {property.city}
                     </p>
                   </div>
@@ -305,322 +347,318 @@ export default function BookingPage() {
             </Card>
 
             {/* Step 1: Room Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold">
-                    1
-                  </div>
-                  Select Room Type
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Select
-                  value={selectedRoomType}
-                  onValueChange={setSelectedRoomType}
-                >
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Choose your preferred room configuration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roomTypes.map((room) => (
-                      <SelectItem key={room.id} value={room.id.toString()}>
-                        <div className="flex items-center justify-between w-full gap-4">
-                          <span className="font-medium">{room.type}</span>
-                          <span className="text-teal-600 font-semibold">
-                            ₹{room.pricePerMonth.toLocaleString()}/month
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            ({room.availableRooms} available)
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedRoom && (
-                  <Alert className="border-teal-200 bg-teal-50 dark:bg-teal-950">
-                    <Info className="h-4 w-4 text-teal-600" />
-                    <AlertDescription className="text-sm">
-                      <strong>{selectedRoom.availableRooms}</strong>{" "}
-                      {selectedRoom.type} room(s) available at{" "}
-                      <strong>₹{selectedRoom.pricePerMonth.toLocaleString()}</strong>{" "}
-                      per month
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="flex items-center justify-center h-6 w-6 rounded-full bg-teal-100 text-teal-700 text-xs font-bold">1</span>
+                Select Room Type
+              </h2>
+              <Card className={touched.roomType && !selectedRoomType ? "border-red-500" : ""}>
+                <CardContent className="p-6 space-y-4">
+                  <Select
+                    value={selectedRoomType}
+                    onValueChange={(val) => {
+                      setSelectedRoomType(val);
+                      setTouched({ ...touched, roomType: true });
+                    }}
+                  >
+                    <SelectTrigger className="h-12 text-base">
+                      <SelectValue placeholder="Select a room type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roomTypes.map((room) => (
+                        <SelectItem key={room.id} value={room.id.toString()}>
+                          <div className="flex items-center justify-between w-full gap-4 min-w-[300px]">
+                            <span className="font-medium">{room.type}</span>
+                            <span className="text-teal-600 font-semibold">
+                              ₹{room.pricePerMonth.toLocaleString()}/mo
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {touched.roomType && !selectedRoomType && (
+                    <p className="text-sm font-medium text-red-500 flex items-center gap-1">
+                      <AlertCircle className="h-4 w-4" />
+                      Please select a room type
+                    </p>
+                  )}
+
+                  {!selectedRoomType && !touched.roomType && (
+                    <p className="text-sm text-muted-foreground">
+                      Choose the room configuration that suits you best
+                    </p>
+                  )}
+
+                  {selectedRoom && (
+                    <div className="bg-teal-50 dark:bg-teal-950/30 rounded-lg p-4 border border-teal-100 dark:border-teal-900 flex items-start gap-3">
+                      <Info className="h-5 w-5 text-teal-600 mt-0.5 shrink-0" />
+                      <div className="text-sm">
+                        <p className="font-medium text-teal-900 dark:text-teal-100">
+                          {selectedRoom.type} Selection
+                        </p>
+                        <p className="text-teal-700 dark:text-teal-300 mt-1">
+                          You've selected a {selectedRoom.type}. We have <strong>{selectedRoom.availableRooms}</strong> units available.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Step 2: Duration */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold">
-                    2
-                  </div>
-                  Choose Duration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Select value={duration} onValueChange={setDuration}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select booking duration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 Month</SelectItem>
-                    <SelectItem value="2">2 Months</SelectItem>
-                    <SelectItem value="3">3 Months</SelectItem>
-                    <SelectItem value="6">6 Months (Popular)</SelectItem>
-                    <SelectItem value="12">12 Months (Best Value)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="flex items-center justify-center h-6 w-6 rounded-full bg-teal-100 text-teal-700 text-xs font-bold">2</span>
+                Stay Duration
+              </h2>
+              <Card>
+                <CardContent className="p-6 space-y-4">
+                  <Select
+                    value={duration}
+                    onValueChange={(val) => {
+                      setDuration(val);
+                      setTouched({ ...touched, duration: true });
+                    }}
+                  >
+                    <SelectTrigger className="h-12 text-base">
+                      <SelectValue placeholder="How long will you stay?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 Month</SelectItem>
+                      <SelectItem value="2">2 Months</SelectItem>
+                      <SelectItem value="3">3 Months</SelectItem>
+                      <SelectItem value="6">6 Months (Popular)</SelectItem>
+                      <SelectItem value="12">12 Months (Best Value)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    Longer stays might be eligible for future discounts.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Step 3: Move-in Date */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold">
-                    3
-                  </div>
-                  Pick Move-in Date
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal h-12"
-                    >
-                      <CalendarIcon className="mr-2 h-5 w-5" />
-                      {moveInDate
-                        ? format(moveInDate, "PPP")
-                        : "Select your move-in date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={moveInDate}
-                      onSelect={setMoveInDate}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                {moveInDate && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    You can move in on{" "}
-                    <strong>{format(moveInDate, "EEEE, MMMM d, yyyy")}</strong>
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="flex items-center justify-center h-6 w-6 rounded-full bg-teal-100 text-teal-700 text-xs font-bold">3</span>
+                Move-in Date
+              </h2>
+              <Card className={touched.moveInDate && !moveInDate ? "border-red-500" : ""}>
+                <CardContent className="p-6 space-y-4">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={`w-full justify-start text-left font-normal h-12 text-base ${!moveInDate && "text-muted-foreground"}`}
+                      >
+                        <CalendarIcon className="mr-2 h-5 w-5" />
+                        {moveInDate ? format(moveInDate, "PPP") : "Select a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={moveInDate}
+                        onSelect={(date) => {
+                          setMoveInDate(date);
+                          setTouched({ ...touched, moveInDate: true });
+                        }}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  {touched.moveInDate && !moveInDate && (
+                    <p className="text-sm font-medium text-red-500 flex items-center gap-1">
+                      <AlertCircle className="h-4 w-4" />
+                      Please select a valid move-in date
+                    </p>
+                  )}
+
+                  <p className="text-sm text-muted-foreground">
+                    Rent billing cycles typically start from your move-in date.
                   </p>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Step 4: Payment Method */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-teal-500 text-white flex items-center justify-center text-sm font-bold">
-                    4
-                  </div>
-                  Choose Payment Method
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div
-                  className={`p-5 border-2 rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === "full"
-                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950 shadow-md"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                  onClick={() => setPaymentMethod("full")}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="h-5 w-5 rounded-full border-2 flex items-center justify-center mt-0.5 shrink-0">
-                      {paymentMethod === "full" && (
-                        <div className="h-3 w-3 rounded-full bg-teal-500" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <CreditCard className="h-5 w-5 text-teal-600" />
-                        <h4 className="font-semibold text-lg">
-                          Pay Full Amount
-                        </h4>
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="flex items-center justify-center h-6 w-6 rounded-full bg-teal-100 text-teal-700 text-xs font-bold">4</span>
+                Payment Method
+              </h2>
+              <Card>
+                <CardContent className="p-6 space-y-4">
+                  <div
+                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "full"
+                        ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    onClick={() => setPaymentMethod("full")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="h-6 w-6 rounded-full border-2 flex items-center justify-center mt-0.5 shrink-0 transition-colors border-teal-500">
+                        {paymentMethod === "full" && (
+                          <div className="h-3 w-3 rounded-full bg-teal-500" />
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Pay total rent (monthly rent × duration) + security
-                        deposit now
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-teal-600 font-medium">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Complete everything in one payment • Move in without
-                        additional payment
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CreditCard className="h-5 w-5 text-teal-600" />
+                          <h4 className="font-bold text-base">Pay Full Amount</h4>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Pay total rent + security deposit now. Best for immediate confirmation.
+                        </p>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div
-                  className={`p-5 border-2 rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === "booking"
-                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950 shadow-md"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                  onClick={() => setPaymentMethod("booking")}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="h-5 w-5 rounded-full border-2 flex items-center justify-center mt-0.5 shrink-0">
-                      {paymentMethod === "booking" && (
-                        <div className="h-3 w-3 rounded-full bg-teal-500" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Wallet className="h-5 w-5 text-teal-600" />
-                        <h4 className="font-semibold text-lg">
-                          Pay Booking Amount
-                        </h4>
+                  <div
+                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "booking"
+                        ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 shadow-sm"
+                        : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    onClick={() => setPaymentMethod("booking")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="h-6 w-6 rounded-full border-2 flex items-center justify-center mt-0.5 shrink-0 transition-colors border-teal-500">
+                        {paymentMethod === "booking" && (
+                          <div className="h-3 w-3 rounded-full bg-teal-500" />
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Pay 20% booking amount now to secure the property
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-teal-600 font-medium">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Pay remaining amount on move-in day • Flexible payment
-                        option
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Wallet className="h-5 w-5 text-teal-600" />
+                          <h4 className="font-bold text-base">Pay Booking Amount</h4>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Pay small token amount now to block the room. Pay rest on check-in.
+                        </p>
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Price Breakdown Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-24 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white">
-                <CardTitle>Price Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 pt-6">
-                {selectedRoom ? (
-                  <>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">
-                          Monthly Rent
-                        </span>
-                        <span className="font-semibold text-lg">
-                          ₹{calculations.monthlyRent.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">Duration</span>
-                        <span className="font-semibold">
-                          {calculations.months} month(s)
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">
-                          Total Rent
-                        </span>
-                        <span className="font-semibold">
-                          ₹{calculations.totalRent.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm pb-2 border-b">
-                        <span className="text-muted-foreground">
-                          Security Deposit
-                        </span>
-                        <span className="font-semibold">
-                          ₹{calculations.securityDeposit.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="text-xs text-muted-foreground italic">
-                        Security deposit is refundable
-                      </div>
+            <div className="sticky top-24 space-y-6">
+              <Card className="shadow-lg border-t-4 border-t-teal-500">
+                <CardHeader>
+                  <CardTitle className="text-xl">Price Breakdown</CardTitle>
+                  <CardDescription>Summary of your charges</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {selectedRoom ? (
+                    <>
+                      <Accordion type="single" collapsible defaultValue="breakdown" className="w-full">
+                        <AccordionItem value="breakdown" className="border-0">
+                          <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                            <span className="flex items-center gap-2">
+                              View Itemized Details
+                            </span>
+                          </AccordionTrigger>
+                          <AccordionContent className="pt-2 pb-4 space-y-3">
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-muted-foreground">Monthly Rent</span>
+                              <span>₹{calculations.monthlyRent.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-muted-foreground">Duration</span>
+                              <span>{calculations.months} month(s)</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm font-medium pt-2 border-t">
+                              <span>Total Rent</span>
+                              <span>₹{calculations.totalRent.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-muted-foreground">Security Deposit</span>
+                              <span>₹{calculations.securityDeposit.toLocaleString()}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground italic mt-2">
+                              * Security deposit is fully refundable upon move-out.
+                            </p>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+
                       {paymentMethod === "booking" && (
-                        <>
-                          <div className="flex justify-between items-center text-sm pb-2 border-b bg-amber-50 dark:bg-amber-950 -mx-4 px-4 py-2">
-                            <span className="text-muted-foreground">
-                              Booking Amount (20%)
-                            </span>
-                            <span className="font-semibold text-amber-600">
-                              ₹{calculations.bookingAmount.toLocaleString()}
-                            </span>
+                        <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-100 dark:border-amber-900 space-y-2">
+                          <div className="flex justify-between items-center text-sm font-semibold text-amber-900 dark:text-amber-100">
+                            <span>Booking Token (20%)</span>
+                            <span>₹{calculations.bookingAmount.toLocaleString()}</span>
                           </div>
-                          <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">
-                              Remaining Amount
-                            </span>
-                            <span className="font-medium">
-                              ₹{calculations.remainingAmount.toLocaleString()}
-                            </span>
+                          <div className="flex justify-between items-center text-xs text-muted-foreground">
+                            <span>Remaining due on arrival</span>
+                            <span>₹{calculations.remainingAmount.toLocaleString()}</span>
                           </div>
-                          <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950">
-                            <Info className="h-4 w-4 text-amber-600" />
-                            <AlertDescription className="text-xs">
-                              Pay remaining{" "}
-                              <strong>
-                                ₹{calculations.remainingAmount.toLocaleString()}
-                              </strong>{" "}
-                              on move-in day
-                            </AlertDescription>
-                          </Alert>
-                        </>
+                        </div>
                       )}
-                    </div>
-                    <div className="border-t-2 pt-4 -mx-4 px-4 bg-gray-50 dark:bg-gray-900">
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="font-bold text-lg">
-                          Total Payable Now
-                        </span>
-                        <span className="text-3xl font-bold text-teal-500">
-                          ₹{calculations.total.toLocaleString()}
-                        </span>
+
+                      <div className="pt-4 border-t border-dashed">
+                        <div className="flex justify-between items-end mb-1">
+                          <span className="font-semibold text-lg">Total Payable</span>
+                          <span className="text-3xl font-bold text-teal-600">
+                            ₹{calculations.total.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground text-right">
+                          Includes all taxes and fees
+                        </p>
                       </div>
+
                       <Button
-                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white h-12 text-lg font-semibold"
-                        size="lg"
+                        className="w-full bg-teal-600 hover:bg-teal-700 h-14 text-lg font-bold shadow-lg shadow-teal-500/20 transition-all mt-4"
                         onClick={handleBooking}
-                        disabled={
-                          !selectedRoomType ||
-                          !moveInDate ||
-                          !duration ||
-                          processing
-                        }
+                        disabled={!isFormValid || processing}
                       >
                         {processing ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="h-5 w-5 animate-spin" />
                             Processing...
-                          </>
+                          </div>
                         ) : (
                           "Confirm Booking"
                         )}
                       </Button>
-                      <p className="text-xs text-center text-muted-foreground mt-3">
-                        🔒 Secure payment • By booking, you agree to our terms
+
+                      {!isFormValid && (
+                        <p className="text-xs text-center text-red-500 font-medium animate-pulse">
+                          Please complete all steps to proceed
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-8 px-4 border-2 border-dashed rounded-lg bg-gray-50/50">
+                      <Info className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+                      <p className="text-sm text-muted-foreground">
+                        Select a room type to calculate pricing
                       </p>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 mx-auto mb-3 flex items-center justify-center">
-                      <Info className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <p className="text-muted-foreground text-sm">
-                      Select room type to see price breakdown
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+
+              <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground grayscale opacity-60">
+                <div className="flex items-center gap-1">
+                  <CreditCard className="h-4 w-4" />
+                  Secure Payment
+                </div>
+                <div className="flex items-center gap-1">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Verified Property
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

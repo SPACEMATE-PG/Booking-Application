@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
@@ -26,6 +26,8 @@ interface Property {
     totalReviews: number;
     isAvailable: boolean;
 }
+
+const ITEMS_PER_PAGE = 6;
 
 export default function PropertiesPage() {
     return (
@@ -60,6 +62,9 @@ function PropertiesContent() {
     const [sortBy, setSortBy] = useState("popularity");
     const [amenitiesFilter, setAmenitiesFilter] = useState<string[]>([]);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+
     const amenitiesList = [
         "WiFi",
         "AC",
@@ -77,9 +82,14 @@ function PropertiesContent() {
         }
     }, [user]);
 
+    // Reset page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, genderFilter, cityFilter, tierFilter, amenitiesFilter, priceRange, sortBy]);
+
     const fetchProperties = async () => {
         try {
-            const response = await fetch("/api/properties?limit=50");
+            const response = await fetch("/api/properties?limit=100"); // Fetch more to allow client-side pagination
             if (response.ok) {
                 const data = await response.json();
                 const parsedData = data.map((property: any) => {
@@ -177,6 +187,7 @@ function PropertiesContent() {
         setAmenitiesFilter([]);
         setTierFilter("all");
         setSortBy("popularity");
+        setSearchQuery("");
     };
 
     const filteredProperties = properties
@@ -233,6 +244,18 @@ function PropertiesContent() {
             }
         });
 
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
+    const paginatedProperties = filteredProperties.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-black">
             <SearchSection
@@ -288,22 +311,65 @@ function PropertiesContent() {
                                 </Button>
                             </div>
                         ) : (
-                            <motion.div
-                                layout
-                                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6"
-                            >
-                                <AnimatePresence>
-                                    {filteredProperties.map((property) => (
-                                        <PropertyCard
-                                            key={property.id}
-                                            property={property}
-                                            isFavorite={favorites.includes(property.id)}
-                                            onToggleFavorite={toggleFavorite}
-                                            onClick={() => router.push(`/properties/${property.id}`)}
-                                        />
-                                    ))}
-                                </AnimatePresence>
-                            </motion.div>
+                            <>
+                                <motion.div
+                                    layout
+                                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6"
+                                >
+                                    <AnimatePresence mode="popLayout">
+                                        {paginatedProperties.map((property) => (
+                                            <PropertyCard
+                                                key={property.id}
+                                                property={property}
+                                                isFavorite={favorites.includes(property.id)}
+                                                onToggleFavorite={toggleFavorite}
+                                                onClick={() => router.push(`/properties/${property.id}`)}
+                                            />
+                                        ))}
+                                    </AnimatePresence>
+                                </motion.div>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="flex justify-center items-center mt-12 gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                            disabled={currentPage === 1}
+                                            className="h-10 w-10 rounded-full"
+                                        >
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Button>
+
+                                        <div className="flex items-center gap-1">
+                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                                <Button
+                                                    key={page}
+                                                    variant={currentPage === page ? "default" : "ghost"}
+                                                    onClick={() => handlePageChange(page)}
+                                                    className={`h-10 w-10 rounded-full font-medium ${currentPage === page
+                                                            ? "bg-teal-600 hover:bg-teal-700 text-white"
+                                                            : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                                        }`}
+                                                >
+                                                    {page}
+                                                </Button>
+                                            ))}
+                                        </div>
+
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                            disabled={currentPage === totalPages}
+                                            className="h-10 w-10 rounded-full"
+                                        >
+                                            <ChevronRight className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

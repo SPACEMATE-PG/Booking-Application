@@ -121,7 +121,7 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild className="bg-teal-500 hover:bg-teal-600">
+              <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 shadow-md hover:shadow-lg transition-all text-base px-6">
                 <Link href="/login">Login / Sign Up</Link>
               </Button>
             )}
