@@ -11,6 +11,8 @@ import { FilterSidebar } from "@/components/properties/FilterSidebar";
 import { SearchSection } from "@/components/properties/SearchSection";
 import { getTier } from "@/components/PropertyTierBadge";
 import { motion, AnimatePresence } from "framer-motion";
+import { PropertyCardSkeleton } from "@/components/ui/LoadingSkeleton";
+import { FloatingActionButton } from "@/components/ui/FloatingActionButton";
 
 interface Property {
     id: number;
@@ -295,8 +297,11 @@ function PropertiesContent() {
                         </div>
 
                         {loading ? (
-                            <div className="flex justify-center items-center py-20">
-                                <Loader2 className="h-10 w-10 animate-spin text-teal-500" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+                                <PropertyCardSkeleton />
+                                <PropertyCardSkeleton />
+                                <PropertyCardSkeleton />
+                                <PropertyCardSkeleton />
                             </div>
                         ) : filteredProperties.length === 0 ? (
                             <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
@@ -349,8 +354,8 @@ function PropertiesContent() {
                                                     variant={currentPage === page ? "default" : "ghost"}
                                                     onClick={() => handlePageChange(page)}
                                                     className={`h-10 w-10 rounded-full font-medium ${currentPage === page
-                                                            ? "bg-teal-600 hover:bg-teal-700 text-white"
-                                                            : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                                        ? "bg-teal-600 hover:bg-teal-700 text-white"
+                                                        : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
                                                         }`}
                                                 >
                                                     {page}
@@ -374,6 +379,9 @@ function PropertiesContent() {
                     </div>
                 </div>
             </div>
+
+            {/* Floating Action Button */}
+            <FloatingActionButton />
         </main>
     );
 }

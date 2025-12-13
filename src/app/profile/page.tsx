@@ -9,13 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
+import { PhotoUploadModal } from "@/components/ui/PhotoUploadModal";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, logout, setUser } = useUser();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -42,20 +43,9 @@ export default function ProfilePage() {
     setProfilePhoto(user.profilePhoto || null);
   }, [user, router]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("Image size should be less than 2MB");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePhoto(reader.result as string);
-        setEditing(true); // Auto-enable editing mode when photo is changed
-      };
-      reader.readAsDataURL(file);
-    }
+  const handlePhotoSelect = (photoDataUrl: string) => {
+    setProfilePhoto(photoDataUrl);
+    setEditing(true); // Auto-enable editing mode when photo is changed
   };
 
   const handleSave = async () => {
@@ -141,16 +131,9 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                    />
                     <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="absolute bottom-0 right-0 h-10 w-10 bg-teal-500 rounded-full flex items-center justify-center text-white hover:bg-teal-600 transition-all shadow-md group-hover:scale-110"
+                      onClick={() => setShowPhotoModal(true)}
+                      className="absolute bottom-0 right-0 h-10 w-10 bg-teal-500 rounded-full flex items-center justify-center text-white hover:bg-teal-600 transition-all shadow-md group-hover:scale-110 hover:shadow-lg"
                       title="Change Profile Photo"
                     >
                       <Camera className="h-5 w-5" />
@@ -344,6 +327,13 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Photo Upload Modal */}
+      <PhotoUploadModal
+        isOpen={showPhotoModal}
+        onClose={() => setShowPhotoModal(false)}
+        onPhotoSelect={handlePhotoSelect}
+      />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Home, Heart, Calendar, User, Menu, LogOut, Bell, HelpCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,16 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const { user, logout, isLoading } = useUser();
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Don't show navbar on auth pages
   if (pathname === "/login" || pathname === "/profile-setup") {
@@ -38,7 +49,10 @@ const Navbar = () => {
   ];
 
   return (
-    <section className="py-4 sticky top-0 z-50 bg-background border-b">
+    <section className={`py-4 sticky top-0 z-50 transition-all duration-300 ${scrolled
+        ? "bg-background/80 backdrop-blur-xl border-b shadow-sm"
+        : "bg-background border-b"
+      }`}>
       <div className="container max-w-6xl items-center mx-auto">
         {/* Desktop Menu */}
         <nav className="hidden justify-between lg:flex">

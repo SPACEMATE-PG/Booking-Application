@@ -46,6 +46,7 @@ import { useUser } from "@/lib/user-context";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import Image from "next/image";
+import { ConfettiAnimation } from "@/components/ui/ConfettiAnimation";
 
 interface Property {
   id: number;
@@ -249,7 +250,7 @@ export default function BookingPage() {
       // Redirect to bookings page after showing success
       setTimeout(() => {
         router.push("/bookings");
-      }, 2000);
+      }, 3000);
     } catch (error) {
       console.error("Booking failed:", error);
       toast.error("Failed to complete booking. Please try again.");
@@ -497,8 +498,8 @@ export default function BookingPage() {
                 <CardContent className="p-6 space-y-4">
                   <div
                     className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "full"
-                        ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 shadow-sm"
-                        : "border-gray-200 hover:border-gray-300"
+                      ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 shadow-sm"
+                      : "border-gray-200 hover:border-gray-300"
                       }`}
                     onClick={() => setPaymentMethod("full")}
                   >
@@ -522,8 +523,8 @@ export default function BookingPage() {
 
                   <div
                     className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === "booking"
-                        ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 shadow-sm"
-                        : "border-gray-200 hover:border-gray-300"
+                      ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 shadow-sm"
+                      : "border-gray-200 hover:border-gray-300"
                       }`}
                     onClick={() => setPaymentMethod("booking")}
                   >
@@ -770,6 +771,9 @@ export default function BookingPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Confetti Animation */}
+      <ConfettiAnimation isActive={bookingSuccess} duration={3000} />
     </main>
   );
 }

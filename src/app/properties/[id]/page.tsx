@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { MapPin, Heart, Star, Wifi, UtensilsCrossed, Car, Wind, Phone, MessageCircle, Calendar, Loader2, ChevronLeft, Check, X, ArrowRight, Building2, Users, Shield, Clock } from "lucide-react";
+import { MapPin, Heart, Star, Wifi, UtensilsCrossed, Car, Wind, Phone, MessageCircle, Calendar, Loader2, ChevronLeft, Check, X, ArrowRight, Building2, Users, Shield, Clock, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { FooterSection } from "@/components/FooterSection";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
+import { FloatingActionButton } from "@/components/ui/FloatingActionButton";
 
 interface Property {
   id: number;
@@ -75,6 +77,8 @@ export default function PropertyDetailsPage() {
   const [showChatDialog, setShowChatDialog] = useState(false);
   const [visitDate, setVisitDate] = useState("");
   const [visitTime, setVisitTime] = useState("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const propertyImages = property?.images && property.images.length > 0
     ? property.images
@@ -316,25 +320,39 @@ export default function PropertyDetailsPage() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Property Header with Image Gallery */}
-            <Carousel className="w-full">
-              <CarouselContent>
-                {property.images?.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <div className="relative h-[400px] rounded-xl overflow-hidden border">
-                      <Image
-                        src={image}
-                        alt={`${property.name} - Image ${index + 1}`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1200px"
-                        className="object-cover"
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-4" />
-              <CarouselNext className="right-4" />
-            </Carousel>
+            <div className="relative">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {property.images?.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div
+                        className="relative h-[400px] rounded-xl overflow-hidden border cursor-pointer group"
+                        onClick={() => {
+                          setLightboxIndex(index);
+                          setLightboxOpen(true);
+                        }}
+                      >
+                        <Image
+                          src={image}
+                          alt={`${property.name} - Image ${index + 1}`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1200px"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        {/* Zoom Indicator */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-sm rounded-full p-3">
+                            <Maximize2 className="h-6 w-6 text-gray-900" />
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-4" />
+                <CarouselNext className="right-4" />
+              </Carousel>
+            </div>
 
             {/* Description - Accordion */}
             <Card className="shadow-none">
@@ -933,6 +951,17 @@ export default function PropertyDetailsPage() {
       <div className="mt-12">
         <FooterSection />
       </div>
+
+      {/* Image Lightbox */}
+      <ImageLightbox
+        images={property.images || []}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
+
+      {/* Floating Action Button */}
+      <FloatingActionButton />
     </main>
   );
 }

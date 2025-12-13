@@ -19,17 +19,36 @@ const HeroSection = ({ searchQuery, setSearchQuery, onSearch }: HeroSectionProps
   const router = useRouter();
 
   return (
-    <section className="bg-background relative py-32 w-screen pt-8">
+    <section className="bg-background relative py-32 w-screen pt-8 overflow-hidden">
+      {/* Animated Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 via-background to-cyan-50/50 dark:from-teal-950/20 dark:via-background dark:to-cyan-950/20" />
+
       <div className="container mx-auto relative z-20 flex items-center justify-center">
         <div className="bg-background flex w-fit flex-col items-center justify-center gap-4 pb-3 text-center">
-          <Button
-            variant="secondary"
-            className="text-md bg-muted/60 group mt-24 flex w-fit items-center justify-center gap-3 rounded-full px-5 py-1 tracking-tight"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <span className="bg-foreground size-2 rounded-full" />
-            <span>Find your perfect stay in seconds</span>
-          </Button>
-          <div className="relative flex max-w-4xl items-center justify-center text-center text-5xl font-medium tracking-tight md:text-7xl">
+            <Button
+              variant="secondary"
+              className="text-md bg-muted/60 group mt-24 flex w-fit items-center justify-center gap-3 rounded-full px-5 py-1 tracking-tight hover:bg-muted/80 transition-all"
+            >
+              <motion.span
+                className="bg-foreground size-2 rounded-full"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <span>Find your perfect stay in seconds</span>
+            </Button>
+          </motion.div>
+
+          <motion.div
+            className="relative flex max-w-4xl items-center justify-center text-center text-5xl font-medium tracking-tight md:text-7xl"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <h1 className="relative z-10 tracking-tighter">
               <span className="mr-3">
                 Discover and book amazing PG
@@ -39,10 +58,16 @@ const HeroSection = ({ searchQuery, setSearchQuery, onSearch }: HeroSectionProps
               <span>.</span>
             </h1>
             <div className="z-9 bg-background absolute h-[105%] w-[85%]" />
-          </div>
-          <p className="bg-background text-muted-foreground/80 mt-5 max-w-xl">
+          </motion.div>
+
+          <motion.p
+            className="bg-background text-muted-foreground/80 mt-5 max-w-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
             Your perfect home away from home. Search, compare, and book with ease.
-          </p>
+          </motion.p>
 
           {/* Search Section */}
           <div className="relative w-full max-w-2xl mx-auto mt-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
@@ -69,19 +94,30 @@ const HeroSection = ({ searchQuery, setSearchQuery, onSearch }: HeroSectionProps
             </div>
 
             {/* Quick Filters */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <motion.div
+              className="flex flex-wrap items-center justify-center gap-3 mt-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
               <span className="text-sm text-muted-foreground/80 font-medium">Popular:</span>
-              {['Male', 'Female', 'Unisex'].map((type) => (
-                <Badge
+              {['Male', 'Female', 'Unisex'].map((type, index) => (
+                <motion.div
                   key={type}
-                  variant="secondary"
-                  className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-300 px-4 py-1.5 rounded-full border border-border/50 bg-background/50 backdrop-blur-sm hover:scale-105 hover:border-primary/20"
-                  onClick={() => router.push(`/properties?gender_type=${type}`)}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.7 + index * 0.1 }}
                 >
-                  {type}
-                </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-all duration-300 px-4 py-1.5 rounded-full border border-border/50 bg-background/50 backdrop-blur-sm hover:scale-105 hover:border-primary/20"
+                    onClick={() => router.push(`/properties?gender_type=${type}`)}
+                  >
+                    {type}
+                  </Badge>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
 
         </div>
